@@ -22,7 +22,7 @@ class _LoginState extends State<Login> {
               Container(
                 width: 220, // Reduced width
                 height: 220, // Reduced height
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage('assets/workup logo.jpg'),
                     fit: BoxFit.contain, // Ensure the entire image is visible
@@ -56,7 +56,8 @@ class _LoginState extends State<Login> {
               const SizedBox(height: 8),
               _buildTextField(_emailController, 'Email or username'),
               const SizedBox(height: 8),
-              _buildTextField(_passwordController, 'Password', obscureText: true),
+              _buildTextField(_passwordController, 'Password',
+                  obscureText: true),
               const SizedBox(height: 20),
               _buildElevatedButton('Continue'),
               const SizedBox(height: 20), // Adjusted height for spacing
@@ -75,14 +76,14 @@ class _LoginState extends State<Login> {
                     borderRadius: BorderRadius.circular(6),
                   ),
                 ),
-                child: Row(
+                child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
                       'Login as Service Provider',
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white,
                         fontSize: 12,
                         fontFamily: 'Inter',
@@ -132,7 +133,8 @@ class _LoginState extends State<Login> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String hintText, {bool obscureText = false}) {
+  Widget _buildTextField(TextEditingController controller, String hintText,
+      {bool obscureText = false}) {
     return SizedBox(
       width: 340,
       child: TextFormField(
@@ -144,7 +146,8 @@ class _LoginState extends State<Login> {
             borderRadius: BorderRadius.circular(10),
             borderSide: const BorderSide(color: Color(0xFFC1C1C1)),
           ),
-          contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
         ),
       ),
     );
@@ -222,9 +225,11 @@ class _LoginState extends State<Login> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildSocialButton('Google', const FlutterLogo()), // Replace with Google logo if needed
+              _buildSocialButton('Google',
+                  const FlutterLogo()), // Replace with Google logo if needed
               const SizedBox(width: 10),
-              _buildSocialButton('Facebook', const FlutterLogo()), // Replace with Facebook logo if needed
+              _buildSocialButton('Facebook',
+                  const FlutterLogo()), // Replace with Facebook logo if needed
             ],
           ),
         ],
