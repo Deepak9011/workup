@@ -136,6 +136,29 @@ router.post('/login', async (req, res) => {
   }
 });
 
+router.post('/verifyToken', async (req, res) => {
+  const email = req.body.email;
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  try {
+    const customer = await Customer.findOne({ email: email });
+    if (!customer) {
+      return res.status(400).json({ message: 'Invalid Email', code: 'InvalidEmail' });
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+      if (err) return res.Status(403).json({ message: "Unverified", code: "unverified" });
+      if(customer._id == user.userId){
+        res.status(200).send({message: "Verified", code: "verified"})
+      }
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error, code: "Error" });
+  }
+});
+
 router.post('/googleLogin', upload.single('image'), async (req, res) => {
 
   const photoUrl = req.body.photoUrl
