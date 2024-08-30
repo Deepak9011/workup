@@ -6,9 +6,11 @@ const bcrypt = require('bcrypt');
 const multer = require('multer');
 const Order = require('../models/order');
 const cloudinary = require('cloudinary').v2;
+const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const { transporter } = require('../utils/email');
 const Customer = require('../models/customer');
+require('dotenv').config();
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -109,6 +111,29 @@ router.post('/verify', async (req, res) => {
       res.json({message: err.message});
   }  
   
+});
+
+router.post('/login', async (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+
+  try {
+    const customer = await Customer.findOne({ email: email });
+    if (!customer) {
+      return res.status(400).json({ message: 'Invalid Email', code: 'InvalidEmail' });
+    }
+
+    const isMatch = await bcrypt.compare(password, customer.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Invalid Password', code: 'InvalidCode' });
+    }
+    
+    const token = jwt.sign({ userId: customer._id }, process.env.JWT_SECRET, { expiresIn: '30d' });
+
+    res.json({ token, code: "Success" });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error, code: "Error" });
+  }
 });
 
 router.post('/googleLogin', upload.single('image'), async (req, res) => {
