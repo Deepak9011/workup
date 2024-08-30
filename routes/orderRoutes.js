@@ -1,7 +1,7 @@
+require('dotenv').config();
 const express = require('express');
 const { razorpay } = require("../razorpay")
 const router = express.Router();
-const User = require('../models/user');
 const Product = require('../models/product');
 const ShortId = require('shortid')
 require('dotenv').config()
