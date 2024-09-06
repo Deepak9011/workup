@@ -86,7 +86,6 @@ const customerSchema = new mongoose.Schema(
         },
         phoneNumber: {
             type: String,
-            unique: true,
             trim: true,
             default: null
         },
