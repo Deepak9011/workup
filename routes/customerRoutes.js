@@ -31,7 +31,7 @@ router.post('/register', async (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
 
-  UnverifiedEmail.findOneAndDelete({email: email})
+  await UnverifiedEmail.findOneAndDelete({email: email})
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
