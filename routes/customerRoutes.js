@@ -31,6 +31,8 @@ router.post('/register', async (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
 
+  UnverifiedEmail.findOneAndDelete({email: email})
+
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
