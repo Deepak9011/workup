@@ -77,10 +77,11 @@ router.post('/verify', async (req, res) => {
 
   const email = req.body.email;
   const otp = req.body.otp;
+  
 
   try{
       await UnverifiedEmail.findOne({email: email}).then( async (uvemail) =>{
-
+        
         if(uvemail.otp == otp){
           
           const customer = new Customer(
@@ -89,20 +90,21 @@ router.post('/verify', async (req, res) => {
               password: uvemail.password,
             }
           )
-
+          
           try{
             await customer.save().then(async () => {
+              
               try{
                 await UnverifiedEmail.deleteOne({ _id: uvemail._id }).then(() => {
                   res.status(200).send({message: "Verification successful"});
                 });
                 
               } catch (err) {
-                res.json({message: err.message});
+                res.status(400).json({message: err.message});
               }
             });
           } catch (err){
-            res.json({message: err.message});
+            res.status(400).json({message: err.message});
           }
         } else {
           res.status(400).send({message: "Verification unsuccessful"});
