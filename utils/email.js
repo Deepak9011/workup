@@ -6,7 +6,7 @@ module.exports.transporter = nodemailer.createTransport({
   port: 465,
   secure: true,
   logger: true,
-  debug: true,
+  debug: false,
   secureConnection: false,
   tls: {
     rejectUnauthorized: true,
