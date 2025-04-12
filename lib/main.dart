@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:workup/screens/bid/customer/CustomerBidScreen.dart';
+import 'package:workup/screens/bid/serviceProvider/BidListScreenServiceProvider.dart';
 import 'package:workup/screens/bid/serviceProvider/ServiceProviderBidDetailScreen.dart';
 import 'package:workup/screens/customer_edit_profile_screen.dart';
 import 'package:workup/screens/homepage_screen.dart';
@@ -78,7 +79,7 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       navigatorKey: navigatorKey,
-      initialRoute: '/loginScreen',
+      initialRoute: '/homepageScreen',
       routes: {
         // '/': (context) => const LoginScreen(),
         '/loginScreen': (context) => const LoginScreen(),
@@ -109,7 +110,12 @@ class MyApp extends StatelessWidget {
             const ServiceProviderAccountProfileScreen(),
         '/serviceProviderOrderConfirmScreen': (context) =>
             const ServiceProviderOrderConfirmScreen(),
-        '/customerBidScreen': (context) => const CustomerBidScreen(),
+
+        // Bidding Routes
+        '/customerBidScreen': (context) =>
+            const CustomerBidScreen(customerId: 'cust123deepak'),
+        '/bidListScreenServiceProvider': (context) =>
+            const BidListScreenServiceProvider(),
         '/serviceProviderBidDetailScreen': (context) =>
             ServiceProviderBidDetailScreen(
               bidData: {
@@ -150,7 +156,7 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const LoginScreen(),
+      home: const BidListScreenServiceProvider(),
     );
   }
 }
