@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:workup/screens/bid/customer/CustomerBidScreen.dart';
@@ -24,6 +25,7 @@ class CreateBidPageScreenCustomer extends StatefulWidget {
 class _CreateBidPageScreenCustomerState
     extends State<CreateBidPageScreenCustomer> {
   final _formKey = GlobalKey<FormState>();
+  final String? apiBiddingUrl = dotenv.env['API_BIDDING_URL'];
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _maxAmountController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
@@ -142,7 +144,7 @@ class _CreateBidPageScreenCustomerState
 
         // Make the API call
         final response = await http.post(
-          Uri.parse('https://workup-bidding-module.onrender.com/bids/create'),
+          Uri.parse('$apiBiddingUrl/bids/create'),
           headers: {'Content-Type': 'application/json'},
           body: json.encode(requestBody),
         );

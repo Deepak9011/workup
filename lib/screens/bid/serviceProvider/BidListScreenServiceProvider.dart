@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -19,6 +20,9 @@ class BidListScreenServiceProvider extends StatefulWidget {
 class _BidListScreenServiceProviderState
     extends State<BidListScreenServiceProvider> {
   List<BidItem> bidItems = [];
+  bool isLoading = true;
+  String errorMessage = '';
+  final String? apiBiddingUrl = dotenv.env['API_BIDDING_URL'];
 
   @override
   void initState() {
@@ -26,62 +30,35 @@ class _BidListScreenServiceProviderState
     loadBids();
   }
 
-  void loadBids() {
-    // Simulated response
-    String rawResponse = '''
-    [
-      {
-        "bidId": "67f21bb7bcdcdc16621572ce",
-        "customerId": "cust123",
-        "serviceProviderId": "provider456",
-        "startBidTime": "2023-06-15T03:30:00",
-        "endBidTime": "2023-06-20T11:30:00",
-        "serviceTime": "2023-06-25T04:30:00",
-        "category": "Plumbing",
-        "description": "Fix leaking kitchen sink",
-        "maxAmount": 150.0,
-        "address": "123 Main St",
-        "state": "California",
-        "country": "USA",
-        "additionalNotes": "Available on weekends",
-        "bidStatus": "Open"
-      },
-      {
-        "bidId": "67f279d6e2763538518dc313",
-        "customerId": "deepak123",
-        "serviceProviderId": "deepakprovider456",
-        "startBidTime": "2025-06-15T09:00:00",
-        "endBidTime": "2025-06-20T17:00:00",
-        "serviceTime": "2025-06-25T10:00:00",
-        "category": "Gardening",
-        "description": "Cutting",
-        "maxAmount": 370.0,
-        "address": "Vallab Nagar, Indore",
-        "state": "Madhya Pradesh",
-        "country": "India",
-        "additionalNotes": "Available on weekends only Sunday",
-        "bidStatus": "Open"
-      }
-    ]
-    ''';
+  Future<void> loadBids() async {
+    setState(() {
+      isLoading = true;
+      errorMessage = '';
+    });
 
-    dynamic data = tryParseJson(rawResponse);
-
-    if (data != null && data is List) {
-      setState(() {
-        bidItems = data.map((e) => BidItem.fromJson(e)).toList();
-      });
-    } else {
-      print('Failed to load bid data');
-    }
-  }
-
-  dynamic tryParseJson(String source) {
     try {
-      return jsonDecode(source);
+      final response = await http.get(
+        Uri.parse('$apiBiddingUrl/bids'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as List;
+        setState(() {
+          bidItems = data.map((e) => BidItem.fromJson(e)).toList();
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          isLoading = false;
+          errorMessage = 'Failed to load bids: ${response.statusCode}';
+        });
+      }
     } catch (e) {
-      print('Invalid JSON format: $source');
-      return null;
+      setState(() {
+        isLoading = false;
+        errorMessage = 'Error fetching bids: $e';
+      });
     }
   }
 
@@ -119,21 +96,28 @@ class _BidListScreenServiceProviderState
         ],
       ),
       bottomNavigationBar: const CustomBottomNavigationBar(),
-      body: ListView.builder(
-        itemCount: bidItems.length,
-        itemBuilder: (context, index) {
-          final item = bidItems[index];
-          return BidCard(
-            item: item,
-            onMakeBid: () {
-              _showBidConfirmation(context, item);
-            },
-            onExplore: () {
-              _showBidDetails(context, item);
-            },
-          );
-        },
-      ),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : errorMessage.isNotEmpty
+              ? Center(child: Text(errorMessage))
+              : RefreshIndicator(
+                  onRefresh: loadBids,
+                  child: ListView.builder(
+                    itemCount: bidItems.length,
+                    itemBuilder: (context, index) {
+                      final item = bidItems[index];
+                      return BidCard(
+                        item: item,
+                        onMakeBid: () {
+                          _showBidConfirmation(context, item);
+                        },
+                        onExplore: () {
+                          _showBidDetails(context, item);
+                        },
+                      );
+                    },
+                  ),
+                ),
     );
   }
 
@@ -142,21 +126,44 @@ class _BidListScreenServiceProviderState
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Confirm Bid'),
+          title: const Text('Confirm Bid'),
           content:
               Text('Are you sure you want to bid on "${item.description}"?'),
           actions: [
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () => Navigator.pop(context),
             ),
             ElevatedButton(
-              child: Text('Confirm Bid'),
+              child: const Text('Confirm Bid'),
               onPressed: () {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Bid placed successfully!')),
-                );
+                Navigator.pop(context); // Close the dialog
+                Navigator.pushNamed(
+                  context,
+                  '/serviceProviderBidDetailScreen',
+                  arguments: {
+                    '_id': item.bidId,
+                    'customerId': item.customerId,
+                    'category': item.category,
+                    'description': item.description,
+                    'serviceTime': item.serviceTime,
+                    'startBidTime': item.startBidTime,
+                    'endBidTime': item.endBidTime,
+                    'maxAmount': item.maxAmount,
+                    'address': item.address,
+                    'state': item.state,
+                    'country': item.country,
+                    'additionalNotes': item.additionalNotes,
+                    'image': item.image, // Pass the entire image map
+                    'bidStatus': item.bidStatus,
+                    'conformCustomerId': item.conformCustomerId,
+                  },
+                ).then((_) {
+                  // Optional: Show success message after returning from detail screen
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Bid placed successfully!')),
+                  );
+                });
               },
             ),
           ],
@@ -164,6 +171,34 @@ class _BidListScreenServiceProviderState
       },
     );
   }
+
+  // void _showBidConfirmation(BuildContext context, BidItem item) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) {
+  //       return AlertDialog(
+  //         title: Text('Confirm Bid'),
+  //         content:
+  //             Text('Are you sure you want to bid on "${item.description}"?'),
+  //         actions: [
+  //           TextButton(
+  //             child: Text('Cancel'),
+  //             onPressed: () => Navigator.pop(context),
+  //           ),
+  //           ElevatedButton(
+  //             child: Text('Confirm Bid'),
+  //             onPressed: () {
+  //               Navigator.pop(context);
+  //               ScaffoldMessenger.of(context).showSnackBar(
+  //                 SnackBar(content: Text('Bid placed successfully!')),
+  //               );
+  //             },
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
   void _showBidDetails(BuildContext context, BidItem item) {
     showDialog(
@@ -201,6 +236,14 @@ class _BidListScreenServiceProviderState
                     'Notes: ${item.additionalNotes}',
                     style: TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
                   ),
+                SizedBox(height: 10),
+                Text(
+                  'Bid Status: ${item.bidStatus}',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: item.bidStatus == 'Open' ? Colors.green : Colors.red,
+                  ),
+                ),
               ],
             ),
           ),
@@ -281,6 +324,17 @@ class BidCard extends StatelessWidget {
                 style:
                     TextStyle(color: Colors.grey, fontStyle: FontStyle.italic),
               ),
+            SizedBox(height: 8),
+            Chip(
+              label: Text(
+                item.bidStatus,
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+              backgroundColor:
+                  item.bidStatus == 'Open' ? Colors.green : Colors.red,
+            ),
             SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -290,7 +344,7 @@ class BidCard extends StatelessWidget {
                   child: Text('Explore'),
                 ),
                 ElevatedButton(
-                  onPressed: onMakeBid,
+                  onPressed: item.bidStatus == 'Open' ? onMakeBid : null,
                   child: Text('Make a Bid'),
                 ),
               ],
@@ -325,7 +379,9 @@ class BidItem {
   final String state;
   final String country;
   final String additionalNotes;
+  final Map<String, dynamic> image;
   final String bidStatus;
+  final String? conformCustomerId;
 
   BidItem({
     required this.bidId,
@@ -341,25 +397,30 @@ class BidItem {
     required this.state,
     required this.country,
     required this.additionalNotes,
+    required this.image,
     required this.bidStatus,
+    this.conformCustomerId,
   });
 
   factory BidItem.fromJson(Map<String, dynamic> json) {
     return BidItem(
-      bidId: json['bidId'],
-      customerId: json['customerId'],
-      serviceProviderId: json['serviceProviderId'],
-      startBidTime: json['startBidTime'],
-      endBidTime: json['endBidTime'],
-      serviceTime: json['serviceTime'],
-      category: json['category'],
-      description: json['description'],
-      maxAmount: (json['maxAmount'] as num).toDouble(),
-      address: json['address'],
-      state: json['state'],
-      country: json['country'],
-      additionalNotes: json['additionalNotes'],
-      bidStatus: json['bidStatus'],
+      bidId: json['bidId'] ?? '',
+      customerId: json['customerId'] ?? '',
+      serviceProviderId: json['serviceProviderId'] ?? '',
+      startBidTime: json['startBidTime'] ?? '',
+      endBidTime: json['endBidTime'] ?? '',
+      serviceTime: json['serviceTime'] ?? '',
+      category: json['category'] ?? '',
+      description: json['description'] ?? '',
+      maxAmount: (json['maxAmount'] as num?)?.toDouble() ?? 0.0,
+      address: json['address'] ?? '',
+      state: json['state'] ?? '',
+      country: json['country'] ?? '',
+      additionalNotes: json['additionalNotes'] ?? '',
+      image:
+          json['image'] is Map ? Map<String, dynamic>.from(json['image']) : {},
+      bidStatus: json['bidStatus'] ?? '',
+      conformCustomerId: json['conformCustomerId'],
     );
   }
 }
