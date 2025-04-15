@@ -79,7 +79,7 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       navigatorKey: navigatorKey,
-      initialRoute: '/homepageScreen',
+      initialRoute: '/serviceProviderHomepageScreen',
       routes: {
         // '/': (context) => const LoginScreen(),
         '/loginScreen': (context) => const LoginScreen(),
@@ -90,6 +90,14 @@ class MyApp extends StatelessWidget {
             const CustomerRegisterScreen(),
         '/customerOtpScreen': (context) =>
             const CustomerRegistrationOtpScreen(),
+        '/customerProfileScreen': (context) => const CustomerProfileScreen(),
+        '/customerEditProfileScreen': (context) =>
+            const CustomerEditProfileScreen(),
+        '/customerCartScreen': (context) => const CustomerCartScreen(),
+        '/customerBidScreen': (context) =>
+            const CustomerBidScreen(customerId: 'cust123deepak'),
+
+        // Service Provider Routes
         '/serviceProviderRegisterScreen': (context) =>
             const ServiceProviderRegisterScreen(),
         '/serviceProviderOtpScreen': (context) =>
@@ -100,10 +108,6 @@ class MyApp extends StatelessWidget {
             const ServiceProviderFullProfileScreen(),
         '/serviceProviderProfileScreen': (context) =>
             const ServiceProviderProfileScreen(),
-        '/customerProfileScreen': (context) => const CustomerProfileScreen(),
-        '/customerEditProfileScreen': (context) =>
-            const CustomerEditProfileScreen(),
-        '/customerCartScreen': (context) => const CustomerCartScreen(),
         '/serviceProviderHomepageScreen': (context) =>
             const ServiceProviderHomepageScreen(),
         '/serviceProviderAccountProfileScreen': (context) =>
@@ -112,8 +116,6 @@ class MyApp extends StatelessWidget {
             const ServiceProviderOrderConfirmScreen(),
 
         // Bidding Routes
-        '/customerBidScreen': (context) =>
-            const CustomerBidScreen(customerId: 'cust123deepak'),
         '/bidListScreenServiceProvider': (context) =>
             const BidListScreenServiceProvider(),
         '/serviceProviderBidDetailScreen': (context) {

@@ -8,6 +8,7 @@ import 'package:workup/utils/colors.dart';
 import 'package:workup/utils/strings.dart';
 import 'package:workup/utils/text_styles.dart';
 import 'package:workup/widgets/bottom_navigation_bar.dart';
+import 'package:workup/widgets/sp_bottom_navigation_bar.dart';
 
 class BidListScreenServiceProvider extends StatefulWidget {
   const BidListScreenServiceProvider({Key? key}) : super(key: key);
@@ -95,7 +96,7 @@ class _BidListScreenServiceProviderState
           )
         ],
       ),
-      bottomNavigationBar: const CustomBottomNavigationBar(),
+      bottomNavigationBar: const SPCustomBottomNavigationBar(),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : errorMessage.isNotEmpty

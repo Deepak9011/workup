@@ -7,6 +7,8 @@ import 'package:workup/widgets/bottom_navigation_bar.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:workup/widgets/sp_bottom_navigation_bar.dart';
+
 class ServiceProviderBidDetailScreen extends StatefulWidget {
   final Map<String, dynamic> bidData;
 
@@ -161,7 +163,7 @@ class _ServiceProviderBidDetailScreenState
           )
         ],
       ),
-      bottomNavigationBar: const CustomBottomNavigationBar(),
+      bottomNavigationBar: const SPCustomBottomNavigationBar(),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(

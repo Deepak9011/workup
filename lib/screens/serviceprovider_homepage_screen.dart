@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:workup/utils/colors.dart';
+import 'package:workup/utils/secure_storage.dart';
 import 'package:workup/utils/strings.dart';
 import 'package:workup/utils/text_styles.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -12,10 +13,12 @@ class ServiceProviderHomepageScreen extends StatefulWidget {
   const ServiceProviderHomepageScreen({super.key});
 
   @override
-  State<ServiceProviderHomepageScreen> createState() => _ServiceProviderHomepageScreenState();
+  State<ServiceProviderHomepageScreen> createState() =>
+      _ServiceProviderHomepageScreenState();
 }
 
-class _ServiceProviderHomepageScreenState extends State<ServiceProviderHomepageScreen> {
+class _ServiceProviderHomepageScreenState
+    extends State<ServiceProviderHomepageScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late List<Category> categoryData;
 
@@ -86,17 +89,37 @@ class _ServiceProviderHomepageScreenState extends State<ServiceProviderHomepageS
 
   String jsonString = "";
 
+  bool _isInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeDataOnce();
+  }
+
+  Future<void> _initializeDataOnce() async {
+    if (!_isInitialized) {
+      _isInitialized = true;
+
+      await saveType("sp");
+      await saveToken(
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NmUyYzlmMjRhOTk5NDVhMTcwZmRjNzEiLCJpYXQiOjE3NDQ2NDA1MzQsImV4cCI6MTc0NzIzMjUzNH0.wHfi29p06YRjNDt94t-dTrI6vSqBHdSX0_4Kx-OxwK8");
+      await saveEmail("deepakagrawal9011@");
+      await savePassword("12345678");
+
+      print("Data saved successfully on first load.");
+    }
+  }
+
   handleMenuClick() {
     _scaffoldKey.currentState?.openDrawer();
   }
 
-  handleChatClick() {
-
-  }
+  handleChatClick() {}
 
   Future<void> fetchData() async {
-
-    final url = Uri.parse('$apiUrl/customers/getCategories'); // Replace with your URL
+    final url =
+        Uri.parse('$apiUrl/customers/getCategories'); // Replace with your URL
 
     try {
       final response = await http.get(url);
@@ -144,10 +167,9 @@ class _ServiceProviderHomepageScreenState extends State<ServiceProviderHomepageS
           backgroundColor: AppColors.primary,
           title: Center(
               child: Text(
-                AppStrings.appTitle,
-                style: AppTextStyles.title.merge(AppTextStyles.textWhite),
-              )
-          ),
+            AppStrings.appTitle,
+            style: AppTextStyles.title.merge(AppTextStyles.textWhite),
+          )),
           leading: IconButton(
             icon: const Icon(
               Icons.menu_rounded,
@@ -169,63 +191,63 @@ class _ServiceProviderHomepageScreenState extends State<ServiceProviderHomepageS
         resizeToAvoidBottomInset: false,
         drawer: const CustomDrawer(),
         body: FutureBuilder(
-          future: fetchData(),
-          builder: (context, snapshot){
-            if(snapshot.connectionState == ConnectionState.waiting){
-              return const Center(child: CircularProgressIndicator(
-                color: AppColors.primary,
-              ));
-            } else if(snapshot.hasError){
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else{
-              return Padding(
-                padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 0.0),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: GridView.builder(
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3, // Number of columns in the grid
-                            crossAxisSpacing: 10.0, // Spacing between columns
-                            mainAxisSpacing: 10.0, // Spacing between rows
-                            childAspectRatio: 1.0, // Aspect ratio of each item
+            future: fetchData(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                    child: CircularProgressIndicator(
+                  color: AppColors.primary,
+                ));
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else {
+                return Padding(
+                  padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 0.0),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: GridView.builder(
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount:
+                                  3, // Number of columns in the grid
+                              crossAxisSpacing: 10.0, // Spacing between columns
+                              mainAxisSpacing: 10.0, // Spacing between rows
+                              childAspectRatio:
+                                  1.0, // Aspect ratio of each item
+                            ),
+                            itemCount: categoryData.length,
+                            itemBuilder: (context, index) {
+                              return categoryElement(
+                                  categoryData[index].imageURL,
+                                  categoryData[index].text,
+                                  categoryData[index].category);
+                            },
                           ),
-                          itemCount: categoryData.length,
-                          itemBuilder: (context, index) {
-                            return categoryElement(categoryData[index].imageURL, categoryData[index].text, categoryData[index].category);
-                          },
                         ),
-                      ),
-
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              );
-            }
-          }
-        ),
+                );
+              }
+            }),
       ),
     );
   }
 
   Widget categoryElement(String imageURL, String text, String category) {
     return GestureDetector(
-      onTap: (){
-        Navigator.pushNamed(
-            context,
-            '/serviceProviderListScreen',
-          arguments: {
-              'category': category
-          }
-        );
+      onTap: () {
+        Navigator.pushNamed(context, '/serviceProviderListScreen',
+            arguments: {'category': category});
       },
       child: Container(
         padding: const EdgeInsets.all(6.0),
         decoration: BoxDecoration(
-            color: AppColors.secondary,
-            borderRadius: BorderRadius.circular(10), // Adjust radius as needed
+          color: AppColors.secondary,
+          borderRadius: BorderRadius.circular(10), // Adjust radius as needed
         ),
         width: 100.0,
         height: 100.0,
@@ -233,24 +255,18 @@ class _ServiceProviderHomepageScreenState extends State<ServiceProviderHomepageS
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(10.0),
+                borderRadius: BorderRadius.circular(10.0),
                 child: SizedBox(
                   height: 90,
                   width: double.infinity,
-                  child: Image.network(
-                      imageURL,
-                      fit: BoxFit.cover
-                  ),
-                )
-            ),
+                  child: Image.network(imageURL, fit: BoxFit.cover),
+                )),
             Expanded(
                 child: Center(
                     child: Text(
-                        text,
-                      style: AppTextStyles.text2.merge(AppTextStyles.textWhite),
-                    )
-                )
-            ),
+              text,
+              style: AppTextStyles.text2.merge(AppTextStyles.textWhite),
+            ))),
           ],
         ),
       ),
@@ -258,7 +274,7 @@ class _ServiceProviderHomepageScreenState extends State<ServiceProviderHomepageS
   }
 }
 
-class Category{
+class Category {
   final String imageURL;
   final String text;
   final String category;
@@ -278,4 +294,3 @@ class Category{
     );
   }
 }
-

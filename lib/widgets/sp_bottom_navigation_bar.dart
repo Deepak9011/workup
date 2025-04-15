@@ -8,11 +8,12 @@ class SPCustomBottomNavigationBar extends StatefulWidget {
   const SPCustomBottomNavigationBar({super.key, this.currentIndex});
 
   @override
-  State<SPCustomBottomNavigationBar> createState() => _SPCustomBottomNavigationBarState();
+  State<SPCustomBottomNavigationBar> createState() =>
+      _SPCustomBottomNavigationBarState();
 }
 
-class _SPCustomBottomNavigationBarState extends State<SPCustomBottomNavigationBar> {
-
+class _SPCustomBottomNavigationBarState
+    extends State<SPCustomBottomNavigationBar> {
   static int _currentIndex = 0;
 
   void _onItemTapped(int index) {
@@ -21,16 +22,20 @@ class _SPCustomBottomNavigationBarState extends State<SPCustomBottomNavigationBa
     });
     switch (index) {
       case 0:
-        Navigator.pushReplacementNamed(context, '/serviceProviderHomepageScreen');
+        Navigator.pushReplacementNamed(
+            context, '/serviceProviderHomepageScreen');
         break;
       case 1:
-        Navigator.pushReplacementNamed(context, '/homepageScreen');
+        Navigator.pushReplacementNamed(
+            context, '/bidListScreenServiceProvider');
         break;
       case 2:
-        Navigator.pushReplacementNamed(context, '/homepageScreen');
+        Navigator.pushReplacementNamed(
+            context, '/serviceProviderHomepageScreen');
         break;
       case 3:
-        Navigator.pushReplacementNamed(context, '/serviceProviderAccountProfileScreen');
+        Navigator.pushReplacementNamed(
+            context, '/serviceProviderAccountProfileScreen');
         break;
     }
   }
