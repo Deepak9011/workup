@@ -268,8 +268,8 @@ class _ServiceProviderBidDetailScreenState
                           controller: _priceController,
                           keyboardType: TextInputType.number,
                           decoration: const InputDecoration(
-                            labelText: 'Your Price (\$)',
-                            prefixIcon: Icon(Icons.attach_money),
+                            labelText: 'Your Price ',
+                            prefixIcon: Icon(Icons.currency_rupee),
                             border: OutlineInputBorder(),
                           ),
                           validator: (value) {
