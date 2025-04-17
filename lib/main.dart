@@ -20,7 +20,12 @@ import 'package:workup/screens/customer_registration_screen.dart';
 import 'package:workup/screens/customer_registration_otp_screen.dart';
 import 'package:workup/screens/serviceprovider_fullprofile_screen.dart';
 import 'package:workup/screens/customer_profile_screen.dart'; // <-- Import the customer profile screen
-import 'package:workup/screens/customer_cart_screen.dart';
+import 'package:workup/screens/cart_screen.dart';
+
+import 'package:workup/screens/order_confirmation_screen.dart'; // order confirmation screen
+import 'package:workup/screens/cart_screen.dart';
+import 'package:workup/screens/order_history_screen.dart';
+import 'package:workup/screens/review_feedback_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -79,7 +84,7 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       navigatorKey: navigatorKey,
-      initialRoute: '/homepageScreen',
+      initialRoute: '/cartScreen',
       routes: {
         // '/': (context) => const LoginScreen(),
         '/loginScreen': (context) => const LoginScreen(),
@@ -103,7 +108,7 @@ class MyApp extends StatelessWidget {
         '/customerProfileScreen': (context) => const CustomerProfileScreen(),
         '/customerEditProfileScreen': (context) =>
             const CustomerEditProfileScreen(),
-        '/customerCartScreen': (context) => const CustomerCartScreen(),
+        '/cartScreen': (context) => const CartScreen(),
         '/serviceProviderHomepageScreen': (context) =>
             const ServiceProviderHomepageScreen(),
         '/serviceProviderAccountProfileScreen': (context) =>
@@ -123,6 +128,14 @@ class MyApp extends StatelessWidget {
             bidData: args,
           );
         },
+
+        '/orderConfirmationScreen': (context) =>
+            const OrderConfirmationScreen(),
+        // ignore: equal_keys_in_map
+        '/cartScreen': (context) => const CartScreen(),
+        '/orderHistoryScreen': (context) => const OrderHistoryScreen(),
+        '/reviewFeedbackScreen': (context) => const ReviewFeedbackScreen(),
+
         // '/serviceProviderBidDetailScreen': (context) =>
         //     ServiceProviderBidDetailScreen(
         //       bidData: {

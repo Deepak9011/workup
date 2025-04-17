@@ -1,4 +1,4 @@
-package com.example.workuptesting
+package com.example.workup
 
 import io.flutter.embedding.android.FlutterActivity
 

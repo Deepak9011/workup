@@ -3,17 +3,14 @@ import 'dart:collection';
 class CartState {
   static final CartState _instance = CartState._internal();
 
-  factory CartState() {
-    return _instance;
-  }
+  factory CartState() => _instance;
 
   CartState._internal();
 
-  /// Stores the counters in the required format
-  /// Example: [{subcategoryId: "id", tasks: [{taskId: "id", qty: 2}]}]
+  /// Internal structure: [{subcategoryId: "id", tasks: [{taskId: "id", qty: 2, name: "Task", price: 100}]}]
   final List<Map<String, dynamic>> _data = [];
 
-  /// Get the quantity of a specific task inside a subcategory
+  /// Get quantity of a specific task
   int getQuantity(String subcategoryId, String taskId) {
     for (var subcategory in _data) {
       if (subcategory['subcategoryId'] == subcategoryId) {
@@ -27,23 +24,23 @@ class CartState {
     return 0;
   }
 
-  /// Ensure the subcategory exists and return a reference to its task list
+  /// Get or create the task list under a subcategory
   List<Map<String, dynamic>> _getOrCreateSubcategory(String subcategoryId) {
     for (var subcategory in _data) {
       if (subcategory['subcategoryId'] == subcategoryId) {
         return subcategory['tasks'];
       }
     }
-
-    // If subcategory does not exist, create and add it
     List<Map<String, dynamic>> newTaskList = [];
     _data.add({'subcategoryId': subcategoryId, 'tasks': newTaskList});
     return newTaskList;
   }
 
-  /// Increment task quantity inside a subcategory
-  void increment(String subcategoryId, String taskId) {
-    List<Map<String, dynamic>> taskList = _getOrCreateSubcategory(subcategoryId);
+  /// Increment task quantity with optional metadata
+  void increment(String subcategoryId, String taskId,
+      {String? name, double? price}) {
+    List<Map<String, dynamic>> taskList =
+        _getOrCreateSubcategory(subcategoryId);
 
     for (var task in taskList) {
       if (task['taskId'] == taskId) {
@@ -52,27 +49,58 @@ class CartState {
       }
     }
 
-    // If task does not exist, add it with quantity 1
-    taskList.add({'taskId': taskId, 'qty': 1});
+    // Add new task with quantity 1
+    taskList.add({
+      'taskId': taskId,
+      'qty': 1,
+      'name': name ?? 'Unnamed Task',
+      'price': price ?? 0.0,
+    });
   }
 
-  /// Decrement task quantity inside a subcategory
+  /// Decrement task quantity and remove if 0
   void decrement(String subcategoryId, String taskId) {
-    List<Map<String, dynamic>> taskList = _getOrCreateSubcategory(subcategoryId);
+    List<Map<String, dynamic>> taskList =
+        _getOrCreateSubcategory(subcategoryId);
 
-    for (var task in taskList) {
-      if (task['taskId'] == taskId && task['qty'] > 0) {
-        task['qty'] -= 1;
-        if (task['qty'] == 0) {
-          taskList.remove(task); // Remove the task if quantity becomes 0
+    for (var i = 0; i < taskList.length; i++) {
+      var task = taskList[i];
+      if (task['taskId'] == taskId) {
+        task['qty'] = task['qty'] - 1;
+        if (task['qty'] <= 0) {
+          taskList.removeAt(i);
         }
         return;
       }
     }
   }
 
-  /// Get JSON representation of the stored data
+  /// Get full cart data (nested)
   List<Map<String, dynamic>> getJson() => UnmodifiableListView(_data);
+
+  /// Flatten all tasks for cart or order history UI
+  List<Map<String, dynamic>> getFlatTaskList() {
+    List<Map<String, dynamic>> flatList = [];
+
+    for (var sub in _data) {
+      for (var task in sub['tasks']) {
+        if (task['qty'] > 0) {
+          flatList.add({
+            'name': task['name'],
+            'price': task['price'],
+            'qty': task['qty'],
+            'taskID': task['taskId'],
+            'subcategoryID': sub['subcategoryId'],
+          });
+        }
+      }
+    }
+
+    return flatList;
+  }
+
+  /// Clear the cart
+  void clearCart() {
+    _data.clear();
+  }
 }
-
-

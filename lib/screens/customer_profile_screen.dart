@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:workup/utils/colors.dart';
+import 'package:workup/utils/design_styles.dart';
 import 'package:workup/utils/secure_storage.dart';
 import 'package:workup/utils/strings.dart';
 import 'package:workup/utils/text_styles.dart';
@@ -24,61 +25,9 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
   String? sID;
 
   String jsonString = "";
-  late Map<String,dynamic> jsonData;
+  late Map<String, dynamic> jsonData;
 
   String jsonString2 = '''[
-    {
-      "name": "Light",
-      "tasks": [
-        {
-          "task_name": "Light replacement",
-          "price": 100
-        },
-        {
-          "task_name": "Light installation",
-          "price": 80
-        }
-      ]
-    },
-    {
-      "name": "Light",
-      "tasks": [
-        {
-          "task_name": "Light replacement",
-          "price": 100
-        },
-        {
-          "task_name": "Light installation",
-          "price": 80
-        }
-      ]
-    },
-    {
-      "name": "Light",
-      "tasks": [
-        {
-          "task_name": "Light replacement",
-          "price": 100
-        },
-        {
-          "task_name": "Light installation",
-          "price": 80
-        }
-      ]
-    },
-    {
-      "name": "Light",
-      "tasks": [
-        {
-          "task_name": "Light replacement",
-          "price": 100
-        },
-        {
-          "task_name": "Light installation",
-          "price": 80
-        }
-      ]
-    },
     {
       "name": "Light",
       "tasks": [
@@ -98,25 +47,16 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
     Navigator.pop(context);
   }
 
-  handleChatClick() {
+  handleChatClick() {}
 
+  handleFilterClick() {}
+
+  editProfileClick() {
+    Navigator.pushNamed(context, '/customerEditProfileScreen',
+        arguments: jsonData);
   }
 
-  handleFilterClick(){
-
-  }
-
-  editProfileClick(){
-    Navigator.pushNamed(
-        context,
-        '/customerEditProfileScreen',
-        arguments: jsonData
-    );
-  }
-
-  saveClickHandler(bool saved, String sID){
-
-  }
+  saveClickHandler(bool saved, String sID) {}
 
   logOutSPClick() async {
     await deleteType();
@@ -129,47 +69,26 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
   Future<void> fetchData() async {
     try {
       var email = await getEmail();
-
-      final url1 = Uri.parse('$apiUrl/customers/getCustomerDetails'); // Replace with your URL
-
+      final url1 = Uri.parse('$apiUrl/customers/getCustomerDetails');
       try {
         final response = await http.post(
           url1,
-          headers: {'Content-Type': 'application/json'}, // Optional headers
+          headers: {'Content-Type': 'application/json'},
           body: '{"email": "$email"}',
         );
-
         if (response.statusCode == 200) {
-          // Decode the JSON response
-          jsonString = response.body; // Get JSON as a raw string
+          jsonString = response.body;
         } else {
           print('Request failed with status: ${response.statusCode}');
         }
       } catch (e) {
         print('Error occurred: $e');
       }
-
       jsonData = jsonDecode(jsonString);
       serviceProviderData = ServiceProviderInfo.fromJson(jsonData);
-
       List<dynamic> jsonData2 = jsonDecode(jsonString2);
-
-      // await Future.delayed(const Duration(seconds: 3));
-      // Simulate fetching data
-      // You can replace this with actual data-fetching logic
-      // e.g., var response = await http.get('https://api.example.com/data');
-      // if (response.statusCode == 200) {
-      //   return jsonDecode(response.body);
-      // } else {
-      //   throw Exception('Failed to load data');
-      // }
-
-      // For demonstration purposes, we'll just print a message
-      // print('Content loaded successfully');
     } catch (e) {
-      // Handle exceptions and errors
-      // print('Error loading content: $e');
-      rethrow; // Rethrow the exception to let FutureBuilder handle it
+      rethrow;
     }
   }
 
@@ -181,15 +100,14 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
         key: _scaffoldKey,
         appBar: AppBar(
           iconTheme: const IconThemeData(
-            color: AppColors.white, // Change to your desired color
+            color: AppColors.white,
           ),
           backgroundColor: AppColors.primary,
           title: Center(
               child: Text(
-                AppStrings.appTitle,
-                style: AppTextStyles.title.merge(AppTextStyles.textWhite),
-              )
-          ),
+            AppStrings.appTitle,
+            style: AppTextStyles.title.merge(AppTextStyles.textWhite),
+          )),
           actions: [
             IconButton(
               icon: const Icon(
@@ -204,14 +122,15 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
         resizeToAvoidBottomInset: false,
         body: FutureBuilder(
             future: fetchData(),
-            builder: (context, snapshot){
-              if(snapshot.connectionState == ConnectionState.waiting){
-                return const Center(child: CircularProgressIndicator(
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                    child: CircularProgressIndicator(
                   color: AppColors.primary,
                 ));
-              } else if(snapshot.hasError){
+              } else if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
-              } else{
+              } else {
                 return Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: SingleChildScrollView(
@@ -219,30 +138,88 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        serviceProviderInfo(serviceProviderData.imgURL, serviceProviderData.sID, serviceProviderData.sName, serviceProviderData.category, serviceProviderData.newSProvider, serviceProviderData.rating, serviceProviderData.reviews, serviceProviderData.ordersCompleted, serviceProviderData.away),
+                        serviceProviderInfo(
+                            serviceProviderData.imgURL,
+                            serviceProviderData.sID,
+                            serviceProviderData.sName,
+                            serviceProviderData.category,
+                            serviceProviderData.newSProvider,
+                            serviceProviderData.rating,
+                            serviceProviderData.reviews,
+                            serviceProviderData.ordersCompleted,
+                            serviceProviderData.away),
                         const SizedBox(height: 20.0),
-                        Column(
-                          children: List.generate(5 * 2 - 1, (index) {
-                            if (index.isEven) {
-                              int itemIndex = index ~/ 2;
-                              return const SizedBox(height: 100, width: double.infinity);
-                            } else {
-                              return const SizedBox(height: 20.0); // Spacing between items
-                            }
-                          }),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/orderHistoryScreen');
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const [
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 10.0),
+                                child: Text("Order History",
+                                    style: TextStyle(color: Colors.white)),
+                              ),
+                              Icon(Icons.arrow_forward_ios,
+                                  color: Colors.white, size: 16),
+                            ],
+                          ),
                         ),
+                        const SizedBox(height: 10),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.pushNamed(
+                                context, '/reviewFeedbackScreen');
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const [
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 10.0),
+                                child: Text("Review & Feedback",
+                                    style: TextStyle(color: Colors.white)),
+                              ),
+                              Icon(Icons.arrow_forward_ios,
+                                  color: Colors.white, size: 16),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 20),
                       ],
                     ),
                   ),
                 );
               }
-            }
-        ),
+            }),
       ),
     );
   }
 
-  Widget serviceProviderInfo(String imgURL, String sID, String sName, String category, bool newSProvider, double rating, int reviews, int ordersCompleted, double away) {
+  Widget serviceProviderInfo(
+      String imgURL,
+      String sID,
+      String sName,
+      String category,
+      bool newSProvider,
+      double rating,
+      int reviews,
+      int ordersCompleted,
+      double away) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
@@ -315,23 +292,27 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
               const SizedBox(height: 4.0),
               FittedBox(
                 child: GestureDetector(
-                  onTap: (){
+                  onTap: () {
                     editProfileClick();
                   },
                   child: Container(
                     decoration: BoxDecoration(
                       color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(8),  // Rounded corners with radius of 12
+                      borderRadius: BorderRadius.circular(8),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 6, horizontal: 10),
                       child: Row(
                         children: [
                           Text(
                             AppStrings.editProfile,
-                            style: AppTextStyles.text2.merge(AppTextStyles.textWhite),
+                            style: AppTextStyles.text2
+                                .merge(AppTextStyles.textWhite),
                           ),
-                          const SizedBox(width: 10,),
+                          const SizedBox(
+                            width: 10,
+                          ),
                           const Icon(
                             Icons.arrow_right,
                             color: AppColors.white,
@@ -361,7 +342,8 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
                 const SizedBox(width: 4),
                 Text(
                   '(${reviews.toString()})',
-                  style: AppTextStyles.textExtraSmall.merge(AppTextStyles.textMediumGrey),
+                  style: AppTextStyles.textExtraSmall
+                      .merge(AppTextStyles.textMediumGrey),
                 ),
               ],
             ),
@@ -401,8 +383,8 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
     );
   }
 
-  Widget getNewTag(bool newSProvider){
-    if(newSProvider){
+  Widget getNewTag(bool newSProvider) {
+    if (newSProvider) {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
         decoration: ShapeDecoration(
@@ -410,10 +392,9 @@ class _CustomerProfileScreenState extends State<CustomerProfileScreen> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
         ),
         child: Center(
-          child: Text(
-              AppStrings.newSeller,
-              style: AppTextStyles.textSmallBold.merge(AppTextStyles.textWhite)
-          ),
+          child: Text(AppStrings.newSeller,
+              style:
+                  AppTextStyles.textSmallBold.merge(AppTextStyles.textWhite)),
         ),
       );
     } else {
