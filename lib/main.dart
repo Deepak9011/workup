@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:workup/screens/bid/customer/BidAcceptanceScreenCustomer.dart';
 import 'package:workup/screens/bid/customer/CustomerBidScreen.dart';
 import 'package:workup/screens/bid/serviceProvider/BidListScreenServiceProvider.dart';
 import 'package:workup/screens/bid/serviceProvider/ServiceProviderBidDetailScreen.dart';
@@ -98,6 +99,11 @@ class MyApp extends StatelessWidget {
         '/customerCartScreen': (context) => const CustomerCartScreen(),
         '/customerBidScreen': (context) =>
             const CustomerBidScreen(customerId: 'cust123deepak'),
+        '/bidAcceptanceScreenCustomer': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments
+              as Map<String, dynamic>;
+          return BidAcceptanceScreenCustomer(bidId: args['bidId']);
+        },
 
         // Service Provider Routes
         '/serviceProviderRegisterScreen': (context) =>

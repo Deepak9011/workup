@@ -177,12 +177,18 @@ class _CustomerBidScreenState extends State<CustomerBidScreen> {
                     return BidDetailCard(
                       bidData: filteredBids[index],
                       onTap: () {
-                        Navigator.push(
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: (context) =>
+                        //         BidDetailPage(bidData: filteredBids[index]),
+                        //   ),
+                        // );
+
+                        Navigator.pushNamed(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                BidDetailPage(bidData: filteredBids[index]),
-                          ),
+                          '/bidAcceptanceScreenCustomer',
+                          arguments: {'bidId': filteredBids[index]['_id']},
                         );
                       },
                     );
@@ -266,7 +272,7 @@ class BidDetailPage extends StatelessWidget {
                 DateFormat('MMM dd, yyyy hh:mm a')
                     .format(DateTime.parse(bidData['serviceTime']))),
             _buildDetailRow(
-                Icons.attach_money, 'Max Amount:', '\$${bidData['maxAmount']}'),
+                Icons.attach_money, 'Max Amount:', '${bidData['maxAmount']}'),
             _buildDetailRow(Icons.location_on, 'Address:',
                 '${bidData['address']}, ${bidData['state']}, ${bidData['country']}'),
             _buildDetailRow(
@@ -394,7 +400,7 @@ class BidDetailCard extends StatelessWidget {
                     ),
                     _buildDetailRow(
                       Icons.attach_money,
-                      'Budget: \$${bidData['maxAmount']?.toString() ?? 'N/A'}',
+                      'Budget: ${bidData['maxAmount']?.toString() ?? 'N/A'}',
                       context,
                     ),
                     _buildDetailRow(

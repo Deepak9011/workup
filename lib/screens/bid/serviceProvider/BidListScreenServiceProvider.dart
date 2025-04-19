@@ -173,34 +173,6 @@ class _BidListScreenServiceProviderState
     );
   }
 
-  // void _showBidConfirmation(BuildContext context, BidItem item) {
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) {
-  //       return AlertDialog(
-  //         title: Text('Confirm Bid'),
-  //         content:
-  //             Text('Are you sure you want to bid on "${item.description}"?'),
-  //         actions: [
-  //           TextButton(
-  //             child: Text('Cancel'),
-  //             onPressed: () => Navigator.pop(context),
-  //           ),
-  //           ElevatedButton(
-  //             child: Text('Confirm Bid'),
-  //             onPressed: () {
-  //               Navigator.pop(context);
-  //               ScaffoldMessenger.of(context).showSnackBar(
-  //                 SnackBar(content: Text('Bid placed successfully!')),
-  //               );
-  //             },
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
-
   void _showBidDetails(BuildContext context, BidItem item) {
     showDialog(
       context: context,
@@ -299,7 +271,7 @@ class BidCard extends StatelessWidget {
                 ),
                 Chip(
                   label: Text(
-                    '\$${item.maxAmount.toStringAsFixed(2)}',
+                    '${item.maxAmount.toStringAsFixed(2)}',
                     style: TextStyle(color: Colors.white),
                   ),
                   backgroundColor: Colors.blue,
