@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:workup/utils/colors.dart';
-import 'package:workup/utils/secure_storage.dart';
 import 'package:workup/utils/strings.dart';
 import 'package:workup/utils/text_styles.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:workup/widgets/bottom_navigation_bar.dart';
 import 'package:workup/widgets/drawer.dart';
 import 'package:workup/widgets/sp_bottom_navigation_bar.dart';
 
@@ -88,28 +88,6 @@ class _ServiceProviderHomepageScreenState
 // ]''';
 
   String jsonString = "";
-
-  bool _isInitialized = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _initializeDataOnce();
-  }
-
-  Future<void> _initializeDataOnce() async {
-    if (!_isInitialized) {
-      _isInitialized = true;
-
-      await saveType("sp");
-      await saveToken(
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NmUyYzlmMjRhOTk5NDVhMTcwZmRjNzEiLCJpYXQiOjE3NDQ2NDA1MzQsImV4cCI6MTc0NzIzMjUzNH0.wHfi29p06YRjNDt94t-dTrI6vSqBHdSX0_4Kx-OxwK8");
-      await saveEmail("deepakagrawal9011@");
-      await savePassword("12345678");
-
-      print("Data saved successfully on first load.");
-    }
-  }
 
   handleMenuClick() {
     _scaffoldKey.currentState?.openDrawer();

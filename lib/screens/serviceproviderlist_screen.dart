@@ -12,7 +12,8 @@ class ServiceProviderListScreen extends StatefulWidget {
   const ServiceProviderListScreen({super.key});
 
   @override
-  State<ServiceProviderListScreen> createState() => _ServiceProviderListScreenState();
+  State<ServiceProviderListScreen> createState() =>
+      _ServiceProviderListScreenState();
 }
 
 class _ServiceProviderListScreenState extends State<ServiceProviderListScreen> {
@@ -136,38 +137,26 @@ class _ServiceProviderListScreenState extends State<ServiceProviderListScreen> {
     Navigator.pop(context);
   }
 
-  handleChatClick() {
+  handleChatClick() {}
 
+  handleSubcategoryClick(String subcategory) {}
+
+  handleFilterClick() {}
+
+  handleServiceProviderInfoBoxClick(String sID) {
+    Navigator.pushNamed(context, '/serviceProviderProfileScreen',
+        arguments: {"sID": sID});
   }
 
-  handleSubcategoryClick(String subcategory) {
-
-  }
-
-  handleFilterClick(){
-
-  }
-
-  handleServiceProviderInfoBoxClick(String sID){
-    Navigator.pushNamed(
-      context,
-      '/serviceProviderProfileScreen',
-      arguments: {
-        "sID": sID
-      }
-    );
-  }
-
-  saveClickHandler(bool saved, String sID){
-
-  }
+  saveClickHandler(bool saved, String sID) {}
 
   Future<void> fetchData() async {
     try {
+      final args =
+          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
-      final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-
-      final url1 = Uri.parse('$apiUrl/customers/getServiceProviders'); // Replace with your URL
+      final url1 = Uri.parse(
+          '$apiUrl/customers/getServiceProviders'); // Replace with your URL
 
       final url2 = Uri.parse('$apiUrl/customers/getSubcategories');
 
@@ -175,7 +164,8 @@ class _ServiceProviderListScreenState extends State<ServiceProviderListScreen> {
         final response = await http.post(
           url1,
           headers: {'Content-Type': 'application/json'}, // Optional headers
-          body: '{"email": "sumexxx666@gmail.com", "category": "${args["category"]}"}',
+          body:
+              '{"email": "sumexxx666@gmail.com", "category": "${args["category"]}"}',
         );
 
         if (response.statusCode == 200) {
@@ -206,10 +196,13 @@ class _ServiceProviderListScreenState extends State<ServiceProviderListScreen> {
       }
 
       List<dynamic> jsonData2 = jsonDecode(jsonString2);
-      subcategoryData = jsonData2.map((item) => Subcategory.fromJson(item)).toList();
+      subcategoryData =
+          jsonData2.map((item) => Subcategory.fromJson(item)).toList();
 
       List<dynamic> jsonData = jsonDecode(jsonString);
-      serviceProviderData = jsonData.map((item) => ServiceProviderInfoBox.fromJson(item)).toList();
+      serviceProviderData = jsonData
+          .map((item) => ServiceProviderInfoBox.fromJson(item))
+          .toList();
 
       // await Future.delayed(const Duration(seconds: 3));
       // Simulate fetching data
@@ -239,10 +232,9 @@ class _ServiceProviderListScreenState extends State<ServiceProviderListScreen> {
           backgroundColor: AppColors.primary,
           title: Center(
               child: Text(
-                AppStrings.appTitle,
-                style: AppTextStyles.title.merge(AppTextStyles.textWhite),
-              )
-          ),
+            AppStrings.appTitle,
+            style: AppTextStyles.title.merge(AppTextStyles.textWhite),
+          )),
           leading: IconButton(
             icon: const Icon(
               Icons.arrow_back_rounded,
@@ -263,94 +255,119 @@ class _ServiceProviderListScreenState extends State<ServiceProviderListScreen> {
         bottomNavigationBar: const CustomBottomNavigationBar(),
         resizeToAvoidBottomInset: false,
         body: FutureBuilder(
-          future: fetchData(),
-          builder: (context, snapshot){
-            if(snapshot.connectionState == ConnectionState.waiting){
-              return const Center(child: CircularProgressIndicator(
-                color: AppColors.primary,
-              ));
-            } else if(snapshot.hasError){
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else{
-              return Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                children: List.generate(subcategoryData.length * 2 - 1, (index) {
+            future: fetchData(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                    child: CircularProgressIndicator(
+                  color: AppColors.primary,
+                ));
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else {
+                return Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    children: List.generate(
+                                        subcategoryData.length * 2 - 1,
+                                        (index) {
+                                      if (index.isEven) {
+                                        int itemIndex = index ~/ 2;
+                                        return subcategoryButton(
+                                            subcategoryData[itemIndex].text,
+                                            subcategoryData[itemIndex]
+                                                .subcategory);
+                                      } else {
+                                        return const SizedBox(
+                                            width:
+                                                10.0); // Spacing between items
+                                      }
+                                    }),
+                                  )),
+                            ),
+                            const SizedBox(width: 10.0),
+                            GestureDetector(
+                              onTap: handleFilterClick,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: AppColors
+                                      .white, // Background color of the container
+                                  borderRadius: BorderRadius.circular(
+                                      10.0), // Radius for rounded corners
+                                  border: Border.all(
+                                    color: AppColors.grey, // Outline color
+                                    width: 1.0, // Outline width
+                                  ),
+                                ),
+                                child: const Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 6.0, horizontal: 6.0),
+                                  child: Center(
+                                      child: Icon(Icons.filter_list_rounded)),
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 10.0,
+                        ),
+                        Flexible(
+                          child: SingleChildScrollView(
+                              scrollDirection: Axis.vertical,
+                              child: Column(
+                                children: List.generate(
+                                    serviceProviderData.length * 2 - 1,
+                                    (index) {
                                   if (index.isEven) {
                                     int itemIndex = index ~/ 2;
-                                    return subcategoryButton(subcategoryData[itemIndex].text, subcategoryData[itemIndex].subcategory);
+                                    return serviceProviderInfoBox(
+                                        serviceProviderData[itemIndex].imgURL,
+                                        serviceProviderData[itemIndex].sID,
+                                        serviceProviderData[itemIndex].sName,
+                                        serviceProviderData[itemIndex].rating,
+                                        serviceProviderData[itemIndex].reviews,
+                                        serviceProviderData[itemIndex]
+                                            .newSProvider,
+                                        serviceProviderData[itemIndex].info,
+                                        serviceProviderData[itemIndex].away,
+                                        serviceProviderData[itemIndex]
+                                            .startingPrice,
+                                        serviceProviderData[itemIndex].saved);
                                   } else {
-                                    return const SizedBox(width: 10.0); // Spacing between items
+                                    return const SizedBox(
+                                        height: 20.0); // Spacing between items
                                   }
                                 }),
-                              )
-                            ),
-                          ),
-                          const SizedBox(width: 10.0),
-                          GestureDetector(
-                            onTap: handleFilterClick,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: AppColors.white, // Background color of the container
-                                borderRadius: BorderRadius.circular(10.0), // Radius for rounded corners
-                                border: Border.all(
-                                  color: AppColors.grey, // Outline color
-                                  width: 1.0, // Outline width
-                                ),
-                              ),
-                              child: const Padding(
-                                padding: EdgeInsets.symmetric(vertical: 6.0, horizontal: 6.0),
-                                child: Center(
-                                    child: Icon(Icons.filter_list_rounded)
-                                ),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                      const SizedBox(height: 10.0,),
-                      Flexible(
-                        child: SingleChildScrollView(
-                            scrollDirection: Axis.vertical,
-                            child: Column(
-                              children: List.generate(serviceProviderData.length * 2 - 1, (index) {
-                                if (index.isEven) {
-                                  int itemIndex = index ~/ 2;
-                                  return serviceProviderInfoBox(serviceProviderData[itemIndex].imgURL, serviceProviderData[itemIndex].sID, serviceProviderData[itemIndex].sName, serviceProviderData[itemIndex].rating, serviceProviderData[itemIndex].reviews, serviceProviderData[itemIndex].newSProvider, serviceProviderData[itemIndex].info, serviceProviderData[itemIndex].away, serviceProviderData[itemIndex].startingPrice, serviceProviderData[itemIndex].saved);
-                                } else {
-                                  return const SizedBox(height: 20.0); // Spacing between items
-                                }
-                              }),
-                            )
-                        ),
-                      )
-                    ],
+                              )),
+                        )
+                      ],
+                    ),
                   ),
-                ),
-              );
-            }
-          }
-        ),
+                );
+              }
+            }),
       ),
     );
   }
 
-  Widget subcategoryButton(String text, String subcategory){
+  Widget subcategoryButton(String text, String subcategory) {
     return GestureDetector(
       onTap: handleSubcategoryClick(subcategory),
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.white, // Background color of the container
-          borderRadius: BorderRadius.circular(10.0), // Radius for rounded corners
+          borderRadius:
+              BorderRadius.circular(10.0), // Radius for rounded corners
           border: Border.all(
             color: AppColors.grey, // Outline color
             width: 1.0, // Outline width
@@ -360,159 +377,171 @@ class _ServiceProviderListScreenState extends State<ServiceProviderListScreen> {
           padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 10.0),
           child: Center(
               child: Text(
-                text,
-                style: AppTextStyles.text2,
-              )
-          ),
+            text,
+            style: AppTextStyles.text2,
+          )),
         ),
       ),
     );
   }
 
-  Widget serviceProviderInfoBox(String imgURL, String sID, String sName, double rating, int reviews, bool newSProvider, String info, double away, int startingPrice, bool saved){
+  Widget serviceProviderInfoBox(
+      String imgURL,
+      String sID,
+      String sName,
+      double rating,
+      int reviews,
+      bool newSProvider,
+      String info,
+      double away,
+      int startingPrice,
+      bool saved) {
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         handleServiceProviderInfoBoxClick(sID);
       },
       child: Container(
-        decoration: BoxDecoration(
-          color: AppColors.white, // Background color of the container
-          borderRadius: BorderRadius.circular(10.0), // Radius for rounded corners
-          boxShadow: const [
-            AppShadowStyles.largeShadow
-          ]
-        ),
-        height: 110.0,
-        child: Row(
-          children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.horizontal(left: Radius.circular(10.0)),
-              child: SizedBox(
-                width: 120.0,
-                height: 110.0,
-                child: FittedBox(
-                  fit: BoxFit.cover,
-                    child: Image.network(imgURL)
+          decoration: BoxDecoration(
+              color: AppColors.white, // Background color of the container
+              borderRadius:
+                  BorderRadius.circular(10.0), // Radius for rounded corners
+              boxShadow: const [AppShadowStyles.largeShadow]),
+          height: 110.0,
+          child: Row(
+            children: [
+              ClipRRect(
+                borderRadius:
+                    const BorderRadius.horizontal(left: Radius.circular(10.0)),
+                child: SizedBox(
+                  width: 120.0,
+                  height: 110.0,
+                  child: FittedBox(
+                      fit: BoxFit.cover, child: Image.network(imgURL)),
                 ),
               ),
-            ),
-            Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
-                  child: Center(
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      sName,
-                                      style: AppTextStyles.text2,
-                                    ),
-                                    const SizedBox(width: 4.0),
-                                    getNewTag(newSProvider)
-                                  ]
+              Expanded(
+                  child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+                child: Center(
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(children: [
+                                Text(
+                                  sName,
+                                  style: AppTextStyles.text2,
                                 ),
-                                const SizedBox(height: 2.0),
-                                Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.star_rounded,
-                                      color: AppColors.primary,
-                                      size: 16.0,
-                                    ),
-                                    const SizedBox(width: 4.0),
-                                    Text(
-                                        rating.toString(),
-                                      style: AppTextStyles.text2.merge(AppTextStyles.textPrimary),
-                                    ),
-                                    const SizedBox(width: 4.0),
-                                    Text(
-                                      '(${reviews.toString()})',
-                                      style: AppTextStyles.textExtraSmall.merge(AppTextStyles.textMediumGrey),
-                                    ),
-                                  ],
-                                )
-                              ],
+                                const SizedBox(width: 4.0),
+                                getNewTag(newSProvider)
+                              ]),
+                              const SizedBox(height: 2.0),
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.star_rounded,
+                                    color: AppColors.primary,
+                                    size: 16.0,
+                                  ),
+                                  const SizedBox(width: 4.0),
+                                  Text(
+                                    rating.toString(),
+                                    style: AppTextStyles.text2
+                                        .merge(AppTextStyles.textPrimary),
+                                  ),
+                                  const SizedBox(width: 4.0),
+                                  Text(
+                                    '(${reviews.toString()})',
+                                    style: AppTextStyles.textExtraSmall
+                                        .merge(AppTextStyles.textMediumGrey),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                          const Spacer(),
+                          getSaveIcon(saved, sID)
+                        ],
+                      ),
+                      const SizedBox(height: 2.0),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              info,
+                              style: AppTextStyles.textSmall
+                                  .merge(AppTextStyles.textMediumGrey),
+                              maxLines: 2, // Limit the text to two lines
+                              overflow: TextOverflow
+                                  .ellipsis, // Show "..." at the end if the text exceeds
+                              softWrap: true,
                             ),
-                            const Spacer(),
-                            getSaveIcon(saved, sID)
-                          ],
-                        ),
-                        const SizedBox(height: 2.0),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                  info,
-                                style: AppTextStyles.textSmall.merge(AppTextStyles.textMediumGrey),
-                                maxLines: 2, // Limit the text to two lines
-                                overflow: TextOverflow.ellipsis, // Show "..." at the end if the text exceeds
-                                softWrap: true,
+                          )
+                        ],
+                      ),
+                      const SizedBox(height: 2.0),
+                      Row(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                AppStrings.away,
+                                style: AppTextStyles.textExtraSmall
+                                    .merge(AppTextStyles.textMediumGrey),
                               ),
-                            )
-                          ],
-                        ),
-                        const SizedBox(height: 2.0),
-                        Row(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text(
-                                  AppStrings.away,
-                                  style: AppTextStyles.textExtraSmall.merge(AppTextStyles.textMediumGrey),
-                                ),
-                                const SizedBox(width: 2.0),
-                                Text(
-                                  away.toString(),
-                                  style: AppTextStyles.text2.merge(AppTextStyles.textDarkGrey),
-                                ),
-                                const SizedBox(width: 2.0),
-                                Text(
-                                  AppStrings.km,
-                                  style: AppTextStyles.textExtraSmall.merge(AppTextStyles.textMediumGrey),
-                                ),
-                              ],
-                            ),
-                            const Spacer(),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text(
-                                  AppStrings.from,
-                                  style: AppTextStyles.textExtraSmall.merge(AppTextStyles.textMediumGrey),
-                                ),
-                                const SizedBox(width: 2.0),
-                                Text(
-                                  '₹ ${startingPrice.toString()}',
-                                  style: AppTextStyles.text2.merge(AppTextStyles.textDarkGrey),
-                                ),
-                              ],
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
+                              const SizedBox(width: 2.0),
+                              Text(
+                                away.toString(),
+                                style: AppTextStyles.text2
+                                    .merge(AppTextStyles.textDarkGrey),
+                              ),
+                              const SizedBox(width: 2.0),
+                              Text(
+                                AppStrings.km,
+                                style: AppTextStyles.textExtraSmall
+                                    .merge(AppTextStyles.textMediumGrey),
+                              ),
+                            ],
+                          ),
+                          const Spacer(),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                AppStrings.from,
+                                style: AppTextStyles.textExtraSmall
+                                    .merge(AppTextStyles.textMediumGrey),
+                              ),
+                              const SizedBox(width: 2.0),
+                              Text(
+                                '₹ ${startingPrice.toString()}',
+                                style: AppTextStyles.text2
+                                    .merge(AppTextStyles.textDarkGrey),
+                              ),
+                            ],
+                          ),
+                        ],
+                      )
+                    ],
                   ),
-                )
-            )
-          ],
-        )
-      ),
+                ),
+              ))
+            ],
+          )),
     );
   }
 
-  getNewTag(bool newSProvider){
-    if(newSProvider){
+  getNewTag(bool newSProvider) {
+    if (newSProvider) {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
         decoration: ShapeDecoration(
@@ -520,10 +549,9 @@ class _ServiceProviderListScreenState extends State<ServiceProviderListScreen> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
         ),
         child: Center(
-          child: Text(
-              AppStrings.newSeller,
-              style: AppTextStyles.textSmallBold.merge(AppTextStyles.textWhite)
-          ),
+          child: Text(AppStrings.newSeller,
+              style:
+                  AppTextStyles.textSmallBold.merge(AppTextStyles.textWhite)),
         ),
       );
     } else {
@@ -531,8 +559,8 @@ class _ServiceProviderListScreenState extends State<ServiceProviderListScreen> {
     }
   }
 
-  getSaveIcon(bool saved, String sID){
-    if(saved){
+  getSaveIcon(bool saved, String sID) {
+    if (saved) {
       return AbsorbPointer(
         absorbing: true,
         child: IconButton(
@@ -540,8 +568,7 @@ class _ServiceProviderListScreenState extends State<ServiceProviderListScreen> {
             icon: const Icon(
               Icons.bookmark_rounded,
               color: AppColors.mediumGrey,
-            )
-        ),
+            )),
       );
     } else {
       return IconButton(
@@ -549,20 +576,16 @@ class _ServiceProviderListScreenState extends State<ServiceProviderListScreen> {
           icon: const Icon(
             Icons.bookmark_add_outlined,
             color: AppColors.mediumGrey,
-          )
-      );
+          ));
     }
   }
 }
 
-class Subcategory{
+class Subcategory {
   final String text;
   final String subcategory;
 
-  Subcategory({
-    required this.text,
-    required this.subcategory
-  });
+  Subcategory({required this.text, required this.subcategory});
 
   // Factory method to create a Service object from JSON
   factory Subcategory.fromJson(Map<String, dynamic> json) {
@@ -573,7 +596,7 @@ class Subcategory{
   }
 }
 
-class ServiceProviderInfoBox{
+class ServiceProviderInfoBox {
   final String imgURL;
   final String sID;
   final String sName;
@@ -585,23 +608,22 @@ class ServiceProviderInfoBox{
   final int startingPrice;
   final bool saved;
 
-  ServiceProviderInfoBox({
-    required this.imgURL,
-    required this.sID,
-    required this.sName,
-    required this.rating,
-    required this.reviews,
-    required this.newSProvider,
-    required this.info,
-    required this.away,
-    required this.startingPrice,
-    required this.saved
-  });
+  ServiceProviderInfoBox(
+      {required this.imgURL,
+      required this.sID,
+      required this.sName,
+      required this.rating,
+      required this.reviews,
+      required this.newSProvider,
+      required this.info,
+      required this.away,
+      required this.startingPrice,
+      required this.saved});
 
   // Factory method to create a Service object from JSON
   factory ServiceProviderInfoBox.fromJson(Map<String, dynamic> json) {
-
-    String createFullName(String firstName, String? middleName, String lastName) {
+    String createFullName(
+        String firstName, String? middleName, String lastName) {
       // Join the non-null values with a space
       return [firstName, middleName, lastName]
           .where((name) => name != null && name.isNotEmpty)
@@ -611,7 +633,8 @@ class ServiceProviderInfoBox{
     return ServiceProviderInfoBox(
       imgURL: json['imgURL'],
       sID: json['uuid'],
-      sName: createFullName(json['firstName'], json['middleName'], json['lastName']),
+      sName: createFullName(
+          json['firstName'], json['middleName'], json['lastName']),
       rating: json['rating'].toDouble(),
       reviews: json['reviewCount'],
       newSProvider: json['newSProvider'],

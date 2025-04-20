@@ -5,9 +5,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:workup/utils/colors.dart';
-import 'package:workup/utils/strings.dart';
 import 'package:workup/utils/text_styles.dart';
-import 'package:workup/widgets/bottom_navigation_bar.dart';
 import 'package:workup/widgets/sp_bottom_navigation_bar.dart';
 
 class BidListScreenServiceProvider extends StatefulWidget {
@@ -110,7 +108,34 @@ class _BidListScreenServiceProviderState
                       return BidCard(
                         item: item,
                         onMakeBid: () {
-                          _showBidConfirmation(context, item);
+                          Navigator.pushNamed(
+                            context,
+                            '/serviceProviderBidDetailScreen',
+                            arguments: {
+                              '_id': item.bidId,
+                              'customerId': item.customerId,
+                              'category': item.category,
+                              'description': item.description,
+                              'serviceTime': item.serviceTime,
+                              'startBidTime': item.startBidTime,
+                              'endBidTime': item.endBidTime,
+                              'maxAmount': item.maxAmount,
+                              'address': item.address,
+                              'state': item.state,
+                              'country': item.country,
+                              'additionalNotes': item.additionalNotes,
+                              'image': item.image, // Pass the entire image map
+                              'bidStatus': item.bidStatus,
+                              'conformCustomerId': item.conformCustomerId,
+                            },
+                          ).then((_) {
+                            // Optional: Show success message after returning from detail screen
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('Bid placed successfully!')),
+                            );
+                          });
+                          // _showBidConfirmation(context, item);
                         },
                         onExplore: () {
                           _showBidDetails(context, item);
@@ -122,56 +147,56 @@ class _BidListScreenServiceProviderState
     );
   }
 
-  void _showBidConfirmation(BuildContext context, BidItem item) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Confirm Bid'),
-          content:
-              Text('Are you sure you want to bid on "${item.description}"?'),
-          actions: [
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () => Navigator.pop(context),
-            ),
-            ElevatedButton(
-              child: const Text('Confirm Bid'),
-              onPressed: () {
-                Navigator.pop(context); // Close the dialog
-                Navigator.pushNamed(
-                  context,
-                  '/serviceProviderBidDetailScreen',
-                  arguments: {
-                    '_id': item.bidId,
-                    'customerId': item.customerId,
-                    'category': item.category,
-                    'description': item.description,
-                    'serviceTime': item.serviceTime,
-                    'startBidTime': item.startBidTime,
-                    'endBidTime': item.endBidTime,
-                    'maxAmount': item.maxAmount,
-                    'address': item.address,
-                    'state': item.state,
-                    'country': item.country,
-                    'additionalNotes': item.additionalNotes,
-                    'image': item.image, // Pass the entire image map
-                    'bidStatus': item.bidStatus,
-                    'conformCustomerId': item.conformCustomerId,
-                  },
-                ).then((_) {
-                  // Optional: Show success message after returning from detail screen
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Bid placed successfully!')),
-                  );
-                });
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // void _showBidConfirmation(BuildContext context, BidItem item) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) {
+  //       return AlertDialog(
+  //         title: const Text('Confirm Bid'),
+  //         content:
+  //             Text('Are you sure you want to bid on "${item.description}"?'),
+  //         actions: [
+  //           TextButton(
+  //             child: const Text('Cancel'),
+  //             onPressed: () => Navigator.pop(context),
+  //           ),
+  //           ElevatedButton(
+  //             child: const Text('Confirm Bid'),
+  //             onPressed: () {
+  //               Navigator.pop(context); // Close the dialog
+  //               Navigator.pushNamed(
+  //                 context,
+  //                 '/serviceProviderBidDetailScreen',
+  //                 arguments: {
+  //                   '_id': item.bidId,
+  //                   'customerId': item.customerId,
+  //                   'category': item.category,
+  //                   'description': item.description,
+  //                   'serviceTime': item.serviceTime,
+  //                   'startBidTime': item.startBidTime,
+  //                   'endBidTime': item.endBidTime,
+  //                   'maxAmount': item.maxAmount,
+  //                   'address': item.address,
+  //                   'state': item.state,
+  //                   'country': item.country,
+  //                   'additionalNotes': item.additionalNotes,
+  //                   'image': item.image, // Pass the entire image map
+  //                   'bidStatus': item.bidStatus,
+  //                   'conformCustomerId': item.conformCustomerId,
+  //                 },
+  //               ).then((_) {
+  //                 // Optional: Show success message after returning from detail screen
+  //                 ScaffoldMessenger.of(context).showSnackBar(
+  //                   const SnackBar(content: Text('Bid placed successfully!')),
+  //                 );
+  //               });
+  //             },
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
   void _showBidDetails(BuildContext context, BidItem item) {
     showDialog(

@@ -6,6 +6,7 @@ import 'package:workup/screens/bid/serviceProvider/BidListScreenServiceProvider.
 import 'package:workup/screens/bid/serviceProvider/ServiceProviderBidDetailScreen.dart';
 import 'package:workup/screens/customer_edit_profile_screen.dart';
 import 'package:workup/screens/homepage_screen.dart';
+import 'package:workup/screens/order_history_screen.dart';
 import 'package:workup/screens/serviceProvider/ServiceProviderDashboard.dart';
 import 'package:workup/screens/serviceProvider/ServiceProviderProfile.dart';
 import 'package:workup/screens/serviceprovider_account_profile_screen.dart';
@@ -99,6 +100,7 @@ class MyApp extends StatelessWidget {
         '/customerCartScreen': (context) => const CustomerCartScreen(),
         '/customerBidScreen': (context) =>
             const CustomerBidScreen(customerId: 'cust123deepak'),
+        '/orderHistoryScreen': (context) => const OrderHistoryScreen(),
         '/bidAcceptanceScreenCustomer': (context) {
           final args = ModalRoute.of(context)!.settings.arguments
               as Map<String, dynamic>;

@@ -21,7 +21,7 @@ class _ServiceProviderOtpScreenState extends State<ServiceProviderOtpScreen> {
   final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
   final AuthService _authService = AuthService();
 
-  bool isOTPVerified = true;
+  bool isOTPVerified = false;
 
   String? email;
 
