@@ -23,7 +23,7 @@ import 'package:workup/screens/serviceprovider_login_screen.dart';
 import 'package:workup/screens/customer_registration_screen.dart';
 import 'package:workup/screens/customer_registration_otp_screen.dart';
 import 'package:workup/screens/serviceprovider_fullprofile_screen.dart';
-import 'package:workup/screens/customer_profile_screen.dart'; // <-- Import the customer profile screen
+import 'package:workup/screens/customer_profile_screen.dart';
 import 'package:workup/screens/customer_cart_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
