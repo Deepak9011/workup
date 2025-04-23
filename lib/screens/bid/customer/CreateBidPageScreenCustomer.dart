@@ -5,14 +5,13 @@ import 'package:image_picker/image_picker.dart';
 import 'package:workup/screens/bid/customer/CustomerBidScreen.dart';
 import 'dart:io';
 import 'package:workup/utils/colors.dart';
+import 'package:workup/utils/secure_storage.dart';
 import 'package:workup/widgets/bottom_navigation_bar.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class CreateBidPageScreenCustomer extends StatefulWidget {
-  final String customerId;
-
-  const CreateBidPageScreenCustomer({super.key, required this.customerId});
+  const CreateBidPageScreenCustomer({super.key});
 
   @override
   _CreateBidPageScreenCustomerState createState() =>
@@ -124,8 +123,14 @@ class _CreateBidPageScreenCustomerState
 
       try {
         // Prepare the request body
+        final email = await getEmail();
+        if (email == null) {
+          // Handle case where email is not available
+          print('No email found in storage');
+          return;
+        }
         final Map<String, dynamic> requestBody = {
-          "customerId": widget.customerId, // Replace with actual customer ID
+          "customerId": email, // Replace with actual customer ID
           "serviceProviderId": "provider456", // This might be empty initially
           "startBidTime": _bidStartDate!.toIso8601String(),
           "endBidTime": _bidEndDate!.toIso8601String(),
@@ -161,8 +166,7 @@ class _CreateBidPageScreenCustomerState
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-                builder: (context) =>
-                    CustomerBidScreen(customerId: widget.customerId)),
+                builder: (context) => CustomerBidScreen(customerId: email)),
           );
         } else {
           throw Exception('Failed to create bid: ${response.body}');

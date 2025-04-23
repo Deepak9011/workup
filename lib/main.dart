@@ -161,7 +161,11 @@ class MyApp extends StatelessWidget {
             }),
         '/serviceProviderOrderConfirmScreen': (context) =>
             const ServiceProviderOrderConfirmScreen(),
-        '/serviceProviderDashboard': (context) => ServiceProviderDashboard(),
+        '/serviceProviderDashboard': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments
+              as Map<String, dynamic>;
+          return ServiceProviderDashboard(bidId: args['bidId']);
+        },
 
         // Bidding Routes
         '/bidListScreenServiceProvider': (context) =>
@@ -173,34 +177,6 @@ class MyApp extends StatelessWidget {
             bidData: args,
           );
         },
-        // '/serviceProviderBidDetailScreen': (context) =>
-        //     ServiceProviderBidDetailScreen(
-        //       bidData: {
-        //         '_id': 'bid001',
-        //         'customerId': 'cust123',
-        //         'category': 'Plumbing',
-        //         'description': 'Fix kitchen sink leakage',
-        //         'serviceTime': DateTime.now().toIso8601String(),
-        //         'startBidTime': DateTime.now()
-        //             .subtract(const Duration(hours: 2))
-        //             .toIso8601String(),
-        //         'endBidTime': DateTime.now()
-        //             .add(const Duration(hours: 2))
-        //             .toIso8601String(),
-        //         'maxAmount': 500,
-        //         'address': '221B Baker Street',
-        //         'state': 'London',
-        //         'country': 'UK',
-        //         'additionalNotes': 'Please bring proper tools.',
-        //         'image': {
-        //           'image1': 'sink1.jpg',
-        //           'image2': 'sink2.jpg',
-        //           'image3': null,
-        //           'image4': null,
-        //           'image5': null,
-        //         }
-        //       },
-        //     ),
       },
       title: 'Flutter Demo',
       theme: ThemeData(

@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:workup/screens/bid/customer/CreateBidPageScreenCustomer.dart';
 import 'package:workup/utils/colors.dart';
+import 'package:workup/utils/secure_storage.dart';
 import 'package:workup/utils/text_styles.dart';
 import 'package:workup/widgets/bottom_navigation_bar.dart';
 
@@ -37,8 +38,14 @@ class _CustomerBidScreenState extends State<CustomerBidScreen> {
     });
 
     try {
+      final email = await getEmail();
+      if (email == null) {
+        // Handle case where email is not available
+        print('No email found in storage');
+        return;
+      }
       final response = await http.get(
-        Uri.parse('$apiBiddingUrl/bids/customer/${widget.customerId}'),
+        Uri.parse('$apiBiddingUrl/bids/customer/$email'),
       );
 
       if (response.statusCode == 200) {
@@ -236,8 +243,7 @@ class _CustomerBidScreenState extends State<CustomerBidScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            CreateBidPageScreenCustomer(customerId: widget.customerId),
+        builder: (context) => CreateBidPageScreenCustomer(),
       ),
     ).then((_) {
       // Refresh bids after creating a new one

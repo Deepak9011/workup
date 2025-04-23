@@ -137,8 +137,12 @@ class _BidListScreenServiceProviderState
                           });
                         },
                         onExplore: () {
+                          final item = bidItems[index];
                           Navigator.pushNamed(
-                              context, '/serviceProviderDashboard');
+                            context,
+                            '/serviceProviderDashboard',
+                            arguments: {'bidId': item.bidId},
+                          );
                           // _showBidDetails(context, item);
                         },
                       );
