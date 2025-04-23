@@ -129,13 +129,14 @@ class MyApp extends StatelessWidget {
         '/serviceProviderAccountProfileScreen': (context) =>
             const ServiceProviderProfile(userData: {
               "_id": "67fd4c704a52a46c53b2f99b",
-              "firstName": "Aarav",
+              "firstName": "Deepak",
               "middleName": "Kumar",
-              "lastName": "Sharma",
-              "email": "aarav.sharma@example.com",
+              "lastName": "Agrawal",
+              "email": "0801vs211034@sgsits.ac.in",
               "phoneNumber": "+919876543210",
               "dateOfBirth": "1998-07-15",
-              "imgURL": "https://example.com/images/aarav-sharma.jpg",
+              "imgURL":
+                  "https://res.cloudinary.com/dj4c2nqte/image/upload/v1745261852/DeepakAgrawal_photo_zns9fa.jpg",
               "imgPublicId": "service_provider/aarav-sharma",
               "rating": 4.7,
               "reviewCount": 35,

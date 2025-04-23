@@ -22,7 +22,7 @@ class ServiceProviderProfile extends StatelessWidget {
         backgroundColor: AppColors.primary,
         title: Center(
             child: Text(
-          "Bid Details Page",
+          "Profile",
           style: AppTextStyles.title.merge(AppTextStyles.textWhite),
         )),
         leading: IconButton(
