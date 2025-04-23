@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:workup/services/cart_service.dart';
+import 'package:workup/services/payment_service.dart';
 import 'package:workup/utils/colors.dart';
+import 'package:workup/utils/secure_storage.dart';
 import 'package:workup/utils/strings.dart';
 import 'package:workup/utils/text_styles.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -132,9 +134,10 @@ class _ServiceProviderProfileScreenState extends State<ServiceProviderProfileScr
     Navigator.pop(context);
   }
 
-  confirmClick() async {
+  final PaymentService _paymentService = PaymentService();
 
-    if(cartState.getJson().isEmpty){
+  confirmClick() async {
+    if (cartState.getJson().isEmpty) {
       return;
     }
 
@@ -144,33 +147,45 @@ class _ServiceProviderProfileScreenState extends State<ServiceProviderProfileScr
 
     final orderData = {
       "data": cartState.getJson(),
-      "sp": serviceProviderData.sID
+      "sp": serviceProviderData.sID,
+      "email": getEmail()
     };
 
-    final orderUrl = Uri.parse('$apiUrl/customers/placeOrder');
+    // Wait for payment success
+    bool paymentSuccess = await _paymentService.openCheckout(amount: 500);
 
-    try {
-      final response = await http.post(
-        orderUrl,
-        headers: {'Content-Type': 'application/json'}, // Optional headers
-        body: jsonEncode(orderData),
-      );
+    if (paymentSuccess) {
+      final orderUrl = Uri.parse('$apiUrl/customers/placeOrder');
 
-      if (response.statusCode == 200) {
-        // Decode the JSON response
-        setState(() {
-          isLoading = false;
-        });
+      try {
+        final response = await http.post(
+          orderUrl,
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode(orderData),
+        );
 
-        navigatorKey.currentState?.pushReplacementNamed('/homepageScreen');
-      } else {
-        print('Request failed with status: ${response.statusCode}');
+        if (response.statusCode == 200) {
+          setState(() {
+            isLoading = false;
+          });
+          navigatorKey.currentState?.pushReplacementNamed('/homepageScreen');
+        } else {
+          print('Request failed with status: ${response.statusCode}');
+        }
+      } catch (e) {
+        debugPrint(e.toString());
       }
-    } catch(e){
-      debugPrint(e.toString());
+    } else {
+      // Payment failed, stop loading
+      setState(() {
+        isLoading = false;
+      });
+
+      print("Payment failed. Order not placed.");
     }
 
-    // Navigator.pushNamed(
+
+// Navigator.pushNamed(
     //     context,
     //     '/serviceProviderOrderConfirmScreen',
     //     arguments: {
@@ -196,7 +211,7 @@ class _ServiceProviderProfileScreenState extends State<ServiceProviderProfileScr
     Navigator.pushNamed(
       context,
       '/serviceProviderFullProfileScreen',
-      arguments: sID
+      arguments: {"sID": sID},
     );
   }
 
@@ -725,7 +740,7 @@ class ServiceProviderInfo {
 
   factory ServiceProviderInfo.fromJson(Map<String, dynamic> json) {
     return ServiceProviderInfo(
-      imgURL: json['imgURL'],
+      imgURL: json['imgURL'] ?? '',
       sID: json['sID'],
       sName: json['sName'],
       category: json['category'],
@@ -761,13 +776,13 @@ class TaskBox extends StatefulWidget {
   final String subcategoryID;
 
   const TaskBox({
-    super.key,
+    Key? key,
     required this.name,
     required this.price,
     required this.taskID,
     required this.subcategoryID,
     this.initialQty = 0,
-  });
+  }) : super(key: key);
 
   @override
   State<TaskBox> createState() => _TaskBoxState();
@@ -818,7 +833,7 @@ class _TaskBoxState extends State<TaskBox> {
             children: [
               GestureDetector(
                 onTap: () {
-                  increment();
+                  decrement();
                 },
                 child: const Padding(
                   padding: EdgeInsets.all(4),

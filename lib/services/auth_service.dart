@@ -14,7 +14,7 @@ class AuthService {
       body: jsonEncode(customer.toJson()),
     );
 
-    return response.statusCode; // Return true if registration is successful
+    return response.statusCode;  // Return true if registration is successful
   }
 
   Future<int> registerServiceProvider(ServiceProvider serviceProvider) async {
@@ -59,20 +59,19 @@ class AuthService {
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(customer.toJson()),
     );
-    print("Hello ${response.toString()}");
+
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       returnData['token'] = data['token'];
       returnData['code'] = data['code'];
-    } else if (response.statusCode == 300) {
+    } else if(response.statusCode == 300){
       // Handle specific case
     }
 
     return returnData;
   }
 
-  Future<Map<String, dynamic>> loginServiceProvider(
-      ServiceProvider serviceProvider) async {
+  Future<Map<String, dynamic>> loginServiceProvider(ServiceProvider serviceProvider) async {
     Map<String, dynamic> returnData = {
       'code': null,
       'message': null,
@@ -89,7 +88,7 @@ class AuthService {
       final data = jsonDecode(response.body);
       returnData['token'] = data['token'];
       returnData['code'] = data['code'];
-    } else if (response.statusCode == 300) {
+    } else if(response.statusCode == 300){
       // Handle specific case
     }
 
@@ -99,16 +98,13 @@ class AuthService {
   Future<bool?> verifyLogin(String email, String token) async {
     final response = await http.post(
       Uri.parse('$apiUrl/customers/verifyToken'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token'
-      },
+      headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $token'},
       body: jsonEncode({'email': email}),
     );
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      if (data['code'] == 'verified') {
+      if(data['code'] == 'verified') {
         return true;
       } else {
         return false;
@@ -121,16 +117,13 @@ class AuthService {
   Future<bool?> verifyLoginServiceProvider(String email, String token) async {
     final response = await http.post(
       Uri.parse('$apiUrl/serviceProviders/verifyTokenSP'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token'
-      },
+      headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer $token'},
       body: jsonEncode({'email': email}),
     );
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      if (data['code'] == 'verified') {
+      if(data['code'] == 'verified') {
         return true;
       } else {
         return false;

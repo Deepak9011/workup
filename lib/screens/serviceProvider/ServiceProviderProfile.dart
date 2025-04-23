@@ -201,7 +201,7 @@ class ServiceProviderProfile extends StatelessWidget {
                 Icons.money,
                 'Starting price',
                 userData['startingPrice'] > 0
-                    ? '\$${userData['startingPrice']}'
+                    ? '${userData['startingPrice']}'
                     : 'Not specified',
                 false,
               ),

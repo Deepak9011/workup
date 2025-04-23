@@ -4,6 +4,7 @@ import 'package:workup/utils/colors.dart';
 import 'package:workup/utils/text_styles.dart';
 
 class CustomDrawer extends StatefulWidget {
+
   const CustomDrawer({super.key});
 
   @override
@@ -11,6 +12,7 @@ class CustomDrawer extends StatefulWidget {
 }
 
 class _CustomDrawerState extends State<CustomDrawer> {
+
   @override
   Widget build(BuildContext context) {
     return Drawer(

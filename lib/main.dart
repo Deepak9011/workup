@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:workup/screens/customer_edit_profile_screen.dart';
+import 'package:workup/screens/homepage_screen.dart';
 import 'package:workup/screens/bid/customer/BidAcceptanceScreenCustomer.dart';
 import 'package:workup/screens/bid/customer/CustomerBidScreen.dart';
 import 'package:workup/screens/bid/serviceProvider/BidListScreenServiceProvider.dart';
 import 'package:workup/screens/bid/serviceProvider/ServiceProviderBidDetailScreen.dart';
-import 'package:workup/screens/customer_edit_profile_screen.dart';
-import 'package:workup/screens/homepage_screen.dart';
-import 'package:workup/screens/order_history_screen.dart';
-import 'package:workup/screens/serviceProvider/ServiceProviderDashboard.dart';
-import 'package:workup/screens/serviceProvider/ServiceProviderProfile.dart';
 import 'package:workup/screens/serviceprovider_account_profile_screen.dart';
 import 'package:workup/screens/serviceprovider_homepage_screen.dart';
 import 'package:workup/screens/serviceprovider_order_confirm_screen.dart';
@@ -23,8 +20,12 @@ import 'package:workup/screens/serviceprovider_login_screen.dart';
 import 'package:workup/screens/customer_registration_screen.dart';
 import 'package:workup/screens/customer_registration_otp_screen.dart';
 import 'package:workup/screens/serviceprovider_fullprofile_screen.dart';
-import 'package:workup/screens/customer_profile_screen.dart';
+import 'package:workup/screens/customer_profile_screen.dart'; // <-- Import the customer profile screen
+import 'package:workup/screens/customer_edit_profile_screen.dart';
 import 'package:workup/screens/customer_cart_screen.dart';
+import 'package:workup/screens/order_history_screen.dart';
+import 'package:workup/screens/serviceProvider/ServiceProviderProfile.dart';
+import 'package:workup/screens/serviceProvider/ServiceProviderDashboard.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -67,6 +68,7 @@ Future<void> requestAllPermissions() async {
 }
 
 class MyApp extends StatelessWidget {
+  //final bool startAtHomepage;
   const MyApp({super.key});
 
   @override
@@ -84,6 +86,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       navigatorKey: navigatorKey,
       initialRoute: '/loginScreen',
+      // initialRoute: startAtHomepage ? '/homepageScreen' : '/loginScreen',
       routes: {
         // '/': (context) => const LoginScreen(),
         '/loginScreen': (context) => const LoginScreen(),
@@ -94,20 +97,6 @@ class MyApp extends StatelessWidget {
             const CustomerRegisterScreen(),
         '/customerOtpScreen': (context) =>
             const CustomerRegistrationOtpScreen(),
-        '/customerProfileScreen': (context) => const CustomerProfileScreen(),
-        '/customerEditProfileScreen': (context) =>
-            const CustomerEditProfileScreen(),
-        '/customerCartScreen': (context) => const CustomerCartScreen(),
-        '/customerBidScreen': (context) =>
-            const CustomerBidScreen(customerId: 'cust123deepak'),
-        '/orderHistoryScreen': (context) => const OrderHistoryScreen(),
-        '/bidAcceptanceScreenCustomer': (context) {
-          final args = ModalRoute.of(context)!.settings.arguments
-              as Map<String, dynamic>;
-          return BidAcceptanceScreenCustomer(bidId: args['bidId']);
-        },
-
-        // Service Provider Routes
         '/serviceProviderRegisterScreen': (context) =>
             const ServiceProviderRegisterScreen(),
         '/serviceProviderOtpScreen': (context) =>
@@ -118,8 +107,25 @@ class MyApp extends StatelessWidget {
             const ServiceProviderFullProfileScreen(),
         '/serviceProviderProfileScreen': (context) =>
             const ServiceProviderProfileScreen(),
+        '/customerProfileScreen': (context) => const CustomerProfileScreen(),
+        '/customerEditProfileScreen': (context) =>
+            const CustomerEditProfileScreen(),
+
         '/serviceProviderHomepageScreen': (context) =>
             const ServiceProviderHomepageScreen(),
+        '/serviceProviderOrderConfirmScreen': (context) =>
+            const ServiceProviderOrderConfirmScreen(),
+        '/orderHistoryScreen': (context) => const OrderHistoryScreen(),
+        '/customerCartScreen': (context) => const CustomerCartScreen(),
+        '/customerBidScreen': (context) =>
+            const CustomerBidScreen(customerId: 'cust123deepak'),
+        '/bidAcceptanceScreenCustomer': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments
+              as Map<String, dynamic>;
+          return BidAcceptanceScreenCustomer(bidId: args['bidId']);
+        },
+
+        // Service Provider Routes
         '/serviceProviderAccountProfileScreen': (context) =>
             const ServiceProviderProfile(userData: {
               "_id": "67fd4c704a52a46c53b2f99b",
@@ -159,8 +165,6 @@ class MyApp extends StatelessWidget {
               "info": "Experienced electrician and appliance repair expert.",
               "category": "5a9c7dcd-99fc-4e3e-bac8-73c18a5e2c65"
             }),
-        '/serviceProviderOrderConfirmScreen': (context) =>
-            const ServiceProviderOrderConfirmScreen(),
         '/serviceProviderDashboard': (context) {
           final args = ModalRoute.of(context)!.settings.arguments
               as Map<String, dynamic>;
@@ -177,6 +181,34 @@ class MyApp extends StatelessWidget {
             bidData: args,
           );
         },
+        // '/serviceProviderBidDetailScreen': (context) =>
+        //     ServiceProviderBidDetailScreen(
+        //       bidData: {
+        //         '_id': 'bid001',
+        //         'customerId': 'cust123',
+        //         'category': 'Plumbing',
+        //         'description': 'Fix kitchen sink leakage',
+        //         'serviceTime': DateTime.now().toIso8601String(),
+        //         'startBidTime': DateTime.now()
+        //             .subtract(const Duration(hours: 2))
+        //             .toIso8601String(),
+        //         'endBidTime': DateTime.now()
+        //             .add(const Duration(hours: 2))
+        //             .toIso8601String(),
+        //         'maxAmount': 500,
+        //         'address': '221B Baker Street',
+        //         'state': 'London',
+        //         'country': 'UK',
+        //         'additionalNotes': 'Please bring proper tools.',
+        //         'image': {
+        //           'image1': 'sink1.jpg',
+        //           'image2': 'sink2.jpg',
+        //           'image3': null,
+        //           'image4': null,
+        //           'image5': null,
+        //         }
+        //       },
+        //     ),
       },
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -189,7 +221,7 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const BidListScreenServiceProvider(),
+      home: const LoginScreen(),
     );
   }
 }

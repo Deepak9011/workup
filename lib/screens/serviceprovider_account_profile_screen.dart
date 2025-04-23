@@ -2,10 +2,12 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:workup/utils/colors.dart';
+import 'package:workup/utils/design_styles.dart';
 import 'package:workup/utils/secure_storage.dart';
 import 'package:workup/utils/strings.dart';
 import 'package:workup/utils/text_styles.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:workup/widgets/bottom_navigation_bar.dart';
 import 'package:workup/widgets/drawer.dart';
 import 'package:workup/widgets/sp_bottom_navigation_bar.dart';
 

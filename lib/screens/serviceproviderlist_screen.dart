@@ -17,9 +17,15 @@ class ServiceProviderListScreen extends StatefulWidget {
 }
 
 class _ServiceProviderListScreenState extends State<ServiceProviderListScreen> {
+  late Future<void> _future;
+  bool _isInit = true;
+
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late List<ServiceProviderInfoBox> serviceProviderData;
+  List<ServiceProviderInfoBox> allServiceProviders = [];
+
   late List<Subcategory> subcategoryData;
+  String? selectedSortOption;
 
   final String? apiUrl = dotenv.env['API_BASE_URL'];
 
@@ -133,27 +139,227 @@ class _ServiceProviderListScreenState extends State<ServiceProviderListScreen> {
 
   String jsonString2 = "";
 
+  double? selectedMinRating;
+  RangeValues priceRange = const RangeValues(50, 1000);
+  bool? isActive;
+  int selectedMinReviews = 0;
+
   handleBackClick() {
     Navigator.pop(context);
   }
 
-  handleChatClick() {}
+  handleChatClick() {
 
-  handleSubcategoryClick(String subcategory) {}
+  }
 
-  handleFilterClick() {}
+  handleSubcategoryClick(String subcategory) {
+
+  }
+
+  void applyFilters() {
+    // print('Before filter: ${serviceProviderData.length}');
+    final filtered = allServiceProviders.where((provider){
+      final matchesRating = selectedMinRating == null || provider.rating >= selectedMinRating!;
+      final matchesPrice = provider.startingPrice >= priceRange.start && provider.startingPrice <= priceRange.end;
+      final matchesReviews = provider.reviews >= selectedMinReviews;
+      final matchesAvailability = isActive == null || !isActive! ;
+
+      return matchesRating && matchesPrice && matchesAvailability && matchesReviews;
+    }).toList();
+
+    setState(() {
+      serviceProviderData = filtered;
+      });
+    // print('After filter: ${serviceProviderData.length}');
+    // print("Filtered List: $serviceProviderData");
+  }
+
+  void applySorting() {
+    if (selectedSortOption == 'PriceLowToHigh') {
+      serviceProviderData.sort((a, b) => a.startingPrice.compareTo(b.startingPrice));
+    } else if (selectedSortOption == 'PriceHighToLow') {
+      serviceProviderData.sort((a, b) => b.startingPrice.compareTo(a.startingPrice));
+    } else if (selectedSortOption == 'Rating') {
+      serviceProviderData.sort((a, b) => b.rating.compareTo(a.rating));
+    }
+    setState(() {}); // To reflect the changes
+  }
+
+  handleFilterClick() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Wrap(
+                runSpacing: 16,
+                children: [
+                  // ⭐ Rating Filter
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Minimum Rating', style: TextStyle(fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      DropdownButtonFormField<double>(
+                        value: selectedMinRating,
+                        decoration: const InputDecoration(
+                          prefixIcon: Icon(Icons.star),
+                          border: OutlineInputBorder(),
+                        ),
+                        items: [5.0, 4.0, 3.0, 2.0].map((rating) {
+                          return DropdownMenuItem(
+                            value: rating,
+                            child: Text('$rating ⭐'),
+                          );
+                        }).toList(),
+                        onChanged: (value) => setModalState(() {
+                          selectedMinRating = value;
+                        }),
+                      ),
+                    ],
+                  ),
+
+                  // 💰 Price Range Filter
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Price Range (₹)', style: TextStyle(fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      RangeSlider(
+                        values: priceRange,
+                        min: 0,
+                        max: 5000,
+                        divisions: 100,
+                        labels: RangeLabels(
+                          '₹${priceRange.start.round()}',
+                          '₹${priceRange.end.round()}',
+                        ),
+                        onChanged: (values) => setModalState(() {
+                          priceRange = values;
+                        }),
+                      ),
+                    ],
+                  ),
+
+                  // 📝 Minimum Reviews Filter
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Minimum Reviews', style: TextStyle(fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      DropdownButtonFormField<int>(
+                        value: selectedMinReviews,
+                        decoration: const InputDecoration(
+                          prefixIcon: Icon(Icons.reviews),
+                          border: OutlineInputBorder(),
+                        ),
+                        items: [0, 10, 25, 50, 100].map((count) {
+                          return DropdownMenuItem(
+                            value: count,
+                            child: Text('$count+ reviews'),
+                          );
+                        }).toList(),
+                        onChanged: (value) => setModalState(() {
+                          selectedMinReviews = value!;
+                        }),
+                      ),
+                    ],
+                  ),
+
+                  // ✅ Availability Toggle
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text("Only show available", style: TextStyle(fontWeight: FontWeight.bold)),
+                      Switch(
+                        value: isActive ?? false,
+                        onChanged: (val) => setModalState(() {
+                          isActive = val;
+                        }),
+                      ),
+                    ],
+                  ),
+
+                  // 🎯 Apply Button
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        setState(() {
+                          applyFilters();
+                        });
+                      },
+                      icon: const Icon(Icons.filter_alt),
+                      label: const Text("Apply Filters"),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  handleSortClick(){
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
+      ),
+      builder: (BuildContext context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: const Text('Price: Low to High'),
+              onTap: () {
+                selectedSortOption = 'PriceLowToHigh';
+                applySorting();
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: const Text('Price: High to Low'),
+              onTap: () {
+                selectedSortOption = 'PriceHighToLow';
+                applySorting();
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: const Text('Rating'),
+              onTap: () {
+                selectedSortOption = 'Rating';
+                applySorting();
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   handleServiceProviderInfoBoxClick(String sID) {
     Navigator.pushNamed(context, '/serviceProviderProfileScreen',
         arguments: {"sID": sID});
   }
 
-  saveClickHandler(bool saved, String sID) {}
+  saveClickHandler(bool saved, String sID) {
 
-  Future<void> fetchData() async {
+  }
+
+  Future<void> fetchData(Map<String, dynamic> args) async {
     try {
-      final args =
-          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+      final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
       final url1 = Uri.parse(
           '$apiUrl/customers/getServiceProviders'); // Replace with your URL
@@ -200,9 +406,11 @@ class _ServiceProviderListScreenState extends State<ServiceProviderListScreen> {
           jsonData2.map((item) => Subcategory.fromJson(item)).toList();
 
       List<dynamic> jsonData = jsonDecode(jsonString);
-      serviceProviderData = jsonData
+      allServiceProviders = jsonData
           .map((item) => ServiceProviderInfoBox.fromJson(item))
           .toList();
+
+      serviceProviderData = List.from(allServiceProviders); // Shallow copy
 
       // await Future.delayed(const Duration(seconds: 3));
       // Simulate fetching data
@@ -217,9 +425,25 @@ class _ServiceProviderListScreenState extends State<ServiceProviderListScreen> {
       // For demonstration purposes, we'll just print a message
       // print('Content loaded successfully');
     } catch (e) {
-      // Handle exceptions and errors
-      // print('Error loading content: $e');
       rethrow; // Rethrow the exception to let FutureBuilder handle it
+    }
+  }
+
+  @override
+  void initState(){
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (_isInit) {
+      final args =
+      ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
+      _future = fetchData(args); // pass args to fetchData
+      _isInit = false;
     }
   }
 
@@ -255,7 +479,7 @@ class _ServiceProviderListScreenState extends State<ServiceProviderListScreen> {
         bottomNavigationBar: const CustomBottomNavigationBar(),
         resizeToAvoidBottomInset: false,
         body: FutureBuilder(
-            future: fetchData(),
+            future: _future,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
@@ -265,6 +489,8 @@ class _ServiceProviderListScreenState extends State<ServiceProviderListScreen> {
               } else if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
               } else {
+                // print('Service Providers: $serviceProviderData');
+
                 return Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: Center(
@@ -297,6 +523,28 @@ class _ServiceProviderListScreenState extends State<ServiceProviderListScreen> {
                             const SizedBox(width: 10.0),
                             GestureDetector(
                               onTap: handleFilterClick,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: AppColors
+                                      .white, // Background color of the container
+                                  borderRadius: BorderRadius.circular(
+                                      10.0), // Radius for rounded corners
+                                  border: Border.all(
+                                    color: AppColors.grey, // Outline color
+                                    width: 1.0, // Outline width
+                                  ),
+                                ),
+                                child: const Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 6.0, horizontal: 6.0),
+                                  child: Center(
+                                      child: Icon(Icons.filter_alt_rounded)),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10.0),
+                            GestureDetector(
+                              onTap: handleSortClick,
                               child: Container(
                                 decoration: BoxDecoration(
                                   color: AppColors
@@ -608,8 +856,8 @@ class ServiceProviderInfoBox {
   final int startingPrice;
   final bool saved;
 
-  ServiceProviderInfoBox(
-      {required this.imgURL,
+  ServiceProviderInfoBox({
+    required this.imgURL,
       required this.sID,
       required this.sName,
       required this.rating,
@@ -629,21 +877,20 @@ class ServiceProviderInfoBox {
           .where((name) => name != null && name.isNotEmpty)
           .join(' ');
     }
-
-    return ServiceProviderInfoBox(
-      imgURL: json['imgURL'],
-      sID: json['uuid'],
-      sName: createFullName(
-          json['firstName'], json['middleName'], json['lastName']),
-      rating: json['rating'].toDouble(),
-      reviews: json['reviewCount'],
-      newSProvider: json['newSProvider'],
-      info: json['info'],
-      // away: json['away'].toDouble(),
-      away: 12.2,
-      startingPrice: json['startingPrice'],
-      // saved: json['saved'],
-      saved: false,
-    );
+      return ServiceProviderInfoBox(
+        imgURL: json['imgURL'] ?? '',
+        sID: json['uuid'],
+        sName: createFullName(
+            json['firstName'], json['middleName'], json['lastName']),
+        rating: json['rating'].toDouble(),
+        reviews: json['reviewCount'],
+        newSProvider: json['newSProvider'],
+        info: json['info'],
+        // away: json['away'].toDouble(),
+        away: 12.2,
+        startingPrice: json['startingPrice'],
+        // saved: json['saved'],
+        saved: false,
+      );
   }
 }

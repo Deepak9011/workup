@@ -30,7 +30,8 @@ class _SPCustomBottomNavigationBarState
             context, '/bidListScreenServiceProvider');
         break;
       case 2:
-        Navigator.pushReplacementNamed(context, '/serviceProviderDashboard');
+        Navigator.pushReplacementNamed(
+            context, '/serviceProviderHomepageScreen');
         break;
       case 3:
         Navigator.pushReplacementNamed(

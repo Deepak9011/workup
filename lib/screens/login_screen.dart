@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:workup/models/customer_model.dart';
+import 'package:workup/utils/colors.dart';
 import 'package:workup/utils/secure_storage.dart';
+import 'package:workup/utils/text_styles.dart';
 
 import '../services/auth_service.dart';
 
@@ -16,20 +18,19 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   final AuthService _authService = AuthService();
 
-  continueButtonClick() {
+  continueButtonClick(){
     // Navigator.pushReplacementNamed(context, '/homepageScreen');
     _login();
   }
-
-  registerCustomer() {
+  registerCustomer(){
     Navigator.pushNamed(context, '/customerRegistrationScreen');
   }
 
-  registerServiceProvider() {
+  registerServiceProvider(){
     Navigator.pushNamed(context, '/serviceProviderRegisterScreen');
   }
 
-  loginServiceProviderClick() {
+  loginServiceProviderClick(){
     Navigator.pushNamed(context, '/serviceProviderLoginScreen');
   }
 
@@ -42,13 +43,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
     switch (response['code']) {
       case 'Error':
-        // Statements for value1
+      // Statements for value1
         break;
       case 'InvalidEmail':
-        // Statements for value2
+      // Statements for value2
         break;
       case 'InvalidPassword':
-        // Statements for value2
+      // Statements for value2
         break;
       case 'Success':
         await saveType("cu");
@@ -57,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
         await savePassword(password);
         Navigator.pushReplacementNamed(context, '/homepageScreen');
         break;
-      // Add more cases as needed
+    // Add more cases as needed
       default:
       // Default statements if no cases match
     }
@@ -68,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
     var token = await getToken();
     var email = await getEmail();
 
-    switch (type) {
+    switch(type){
       case 'cu':
         var loginState = await _authService.verifyLogin(email!, token!);
         if (loginState!) {
@@ -76,14 +77,13 @@ class _LoginScreenState extends State<LoginScreen> {
         }
         break;
       case 'sp':
-        var loginState =
-            await _authService.verifyLoginServiceProvider(email!, token!);
+        var loginState = await _authService.verifyLoginServiceProvider(email!, token!);
         if (loginState!) {
-          Navigator.pushReplacementNamed(
-              context, '/serviceProviderHomepageScreen');
+          Navigator.pushReplacementNamed(context, '/serviceProviderHomepageScreen');
         }
         break;
     }
+
   }
 
   @override
@@ -113,46 +113,43 @@ class _LoginScreenState extends State<LoginScreen> {
                             height: 128, // Reduced height
                             decoration: const BoxDecoration(
                               image: DecorationImage(
-                                image:
-                                    AssetImage('assets/images/WorkUpLogo.png'),
-                                fit: BoxFit
-                                    .contain, // Ensure the entire image is visible
+                                image: AssetImage('assets/images/WorkUpLogo.png'),
+                                fit: BoxFit.contain, // Ensure the entire image is visible
                               ),
                             ),
                           ),
                           const SizedBox(height: 10),
-                          const Text(
+                          Text(
                             "Welcome to Work Up",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 20,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: AppTextStyles.heading2.merge(AppTextStyles.textBlack)
+                            // TextStyle(
+                            //   color: Colors.black,
+                            //   fontSize: 20,
+                            //   fontFamily: 'Inter',
+                            //   fontWeight: FontWeight.bold,
+                            // ),
                           ),
                           const SizedBox(height: 10),
-                          const Text(
+                           Text(
                             'Please enter your registration email and password',
                             textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Color(0xFF2F2F2F),
-                              fontSize: 12,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w400,
-                              height: 1.5,
-                            ),
+                            style: AppTextStyles.text1.merge(AppTextStyles.textDarkGrey)
+                            // TextStyle(
+                            //   color: Color(0xFF2F2F2F),
+                            //   fontSize: 12,
+                            //   fontFamily: 'Inter',
+                            //   fontWeight: FontWeight.w400,
+                            //   height: 1.5,
+                            // ),
                           ),
                           const SizedBox(height: 20),
-                          _buildTextField(
-                              _emailController, 'Email or username'),
+                          _buildTextField(_emailController, 'Email or username'),
                           const SizedBox(height: 20),
-                          _buildTextField(_passwordController, 'Password',
-                              obscureText: true),
+                          _buildTextField(_passwordController, 'Password', obscureText: true),
                           const SizedBox(height: 20),
                           _buildElevatedButton('Continue'),
-                          const SizedBox(
-                              height: 20), // Adjusted height for spacing
-                          _buildSocialMediaOptions(),
+                          const SizedBox(height: 20), // Adjusted height for spacing
+                          // _buildSocialMediaOptions(),
                           const SizedBox(height: 20),
                           _buildRegisterRow(),
                           const SizedBox(height: 20),
@@ -165,34 +162,36 @@ class _LoginScreenState extends State<LoginScreen> {
                             children: [
                               TextButton(
                                 onPressed: registerServiceProvider,
-                                child: const Text(
+                                child: Text(
                                   'Register',
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Color(0xFF86469C),
-                                    fontSize: 12,
-                                    fontFamily: 'Inter',
-                                    fontWeight: FontWeight.w500,
-                                    height: 0,
-                                  ),
+                                  style: AppTextStyles.text2.merge(AppTextStyles.textPrimary)
+                                  // TextStyle(
+                                  //   color: Color(0xFF86469C),
+                                  //   fontSize: 12,
+                                  //   fontFamily: 'Inter',
+                                  //   fontWeight: FontWeight.w500,
+                                  //   height: 0,
+                                  // ),
                                 ),
                               ),
                               const SizedBox(width: 4),
-                              const Text(
+                               Text(
                                 'to become a Service Provider',
-                                style: TextStyle(
-                                  color: Color(0xFF2F2F2F),
-                                  fontSize: 12,
-                                  fontFamily: 'Inter',
-                                  fontWeight: FontWeight.w500,
-                                  height: 0,
-                                ),
+                                style: AppTextStyles.text2.merge(AppTextStyles.textDarkGrey)
+                                // TextStyle(
+                                //   color: Color(0xFF2F2F2F),
+                                //   fontSize: 12,
+                                //   fontFamily: 'Inter',
+                                //   fontWeight: FontWeight.w500,
+                                //   height: 0,
+                                // ),
                               ),
                             ],
                           ),
-                          const SizedBox(
-                              height: 20), // Add spacing before forgot password
-                        ]),
+                          const SizedBox(height: 20), // Add spacing before forgot password
+                        ]
+                    ),
                   ),
                 ),
               ),
@@ -205,8 +204,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String hintText,
-      {bool obscureText = false}) {
+  Widget _buildTextField(TextEditingController controller, String hintText, {bool obscureText = false}) {
     return SizedBox(
       width: 340,
       child: TextFormField(
@@ -216,10 +214,9 @@ class _LoginScreenState extends State<LoginScreen> {
           hintText: hintText,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: Color(0xFFC1C1C1)),
+            borderSide: const BorderSide(color: AppColors.grey),
           ),
-          contentPadding:
-              const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+          contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
         ),
       ),
     );
@@ -230,7 +227,8 @@ class _LoginScreenState extends State<LoginScreen> {
       width: 340,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF86469C),
+          backgroundColor: AppColors.primary,
+          // const Color(0xFF86469C),
           padding: const EdgeInsets.symmetric(vertical: 10),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(6),
@@ -254,7 +252,8 @@ class _LoginScreenState extends State<LoginScreen> {
       width: 340,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF86469C),
+          backgroundColor: AppColors.primary,
+          // const Color(0xFF86469C),
           padding: const EdgeInsets.symmetric(vertical: 10),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(6),
@@ -283,15 +282,16 @@ class _LoginScreenState extends State<LoginScreen> {
             onPressed: () {
               // Handle forgot password logic here
             },
-            child: const Text(
+            child: Text(
               'Forgot Password?',
-              style: TextStyle(
-                color: Color(0xFF86469C),
-                fontSize: 12,
-                fontFamily: 'Inter',
-                fontWeight: FontWeight.w500,
-                height: 0,
-              ),
+              style: AppTextStyles.text2.merge(AppTextStyles.textPrimary)
+              // TextStyle(
+              //   color: Color(0xFF86469C),
+              //   fontSize: 12,
+              //   fontFamily: 'Inter',
+              //   fontWeight: FontWeight.w500,
+              //   height: 0,
+              // ),
             ),
           ),
         ],
@@ -319,11 +319,9 @@ class _LoginScreenState extends State<LoginScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildSocialButton('Google',
-                  const FlutterLogo()), // Replace with Google logo if needed
+              _buildSocialButton('Google', const FlutterLogo()), // Replace with Google logo if needed
               const SizedBox(width: 10),
-              _buildSocialButton('Facebook',
-                  const FlutterLogo()), // Replace with Facebook logo if needed
+              _buildSocialButton('Facebook', const FlutterLogo()), // Replace with Facebook logo if needed
             ],
           ),
         ],
@@ -371,13 +369,14 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Text(
         text,
         textAlign: TextAlign.center,
-        style: const TextStyle(
-          color: Color(0xFF2F2F2F),
-          fontSize: 12,
-          fontFamily: 'Inter',
-          fontWeight: FontWeight.w500,
-          height: 0,
-        ),
+        style: AppTextStyles.text2.merge(AppTextStyles.textDarkGrey)
+        // TextStyle(
+        //   color: Color(0xFF2F2F2F),
+        //   fontSize: 12,
+        //   fontFamily: 'Inter',
+        //   fontWeight: FontWeight.w500,
+        //   height: 0,
+        // ),
       ),
     );
   }
@@ -386,29 +385,31 @@ class _LoginScreenState extends State<LoginScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text(
+        Text(
           'Don\'t have an account?',
-          style: TextStyle(
-            color: Color(0xFF2F2F2F),
-            fontSize: 12,
-            fontFamily: 'Inter',
-            fontWeight: FontWeight.w400,
-            height: 0,
-          ),
+          style: AppTextStyles.text1.merge(AppTextStyles.textDarkGrey)
+          // TextStyle(
+          //   color: Color(0xFF2F2F2F),
+          //   fontSize: 12,
+          //   fontFamily: 'Inter',
+          //   fontWeight: FontWeight.w400,
+          //   height: 0,
+          // ),
         ),
         const SizedBox(width: 8),
         TextButton(
           onPressed: registerCustomer,
-          child: const Text(
+          child: Text(
             'Register',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Color(0xFF86469C),
-              fontSize: 12,
-              fontFamily: 'Inter',
-              fontWeight: FontWeight.w500,
-              height: 0,
-            ),
+            style: AppTextStyles.text2.merge(AppTextStyles.textPrimary)
+            // TextStyle(
+            //   color: Color(0xFF86469C),
+            //   fontSize: 12,
+            //   fontFamily: 'Inter',
+            //   fontWeight: FontWeight.w500,
+            //   height: 0,
+            // ),
           ),
         ),
       ],

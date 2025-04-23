@@ -22,9 +22,7 @@ class PaymentService {
       'name': 'Work Up',
       'description': 'Payment for Order #1234',
       'prefill': {'contact': '8974863731', 'email': 'workupsgsits@gmail.com'},
-      'external': {
-        'wallets': ['paytm']
-      }
+      'external': {'wallets': ['paytm']}
     };
 
     try {
@@ -55,3 +53,4 @@ class PaymentService {
     _razorpay.clear();
   }
 }
+

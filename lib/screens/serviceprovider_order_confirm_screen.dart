@@ -18,7 +18,7 @@ class _ServiceProviderOrderConfirmScreenState extends State<ServiceProviderOrder
   final String apiUrl = "https://example.com/api"; // Replace with actual API URL
   List<Map<String, List<Map<String, int>>>> subcategories = [];
   Map<String, dynamic> sp = {};
-  
+
   Future<void> fetchData() async {
     try {
       final Map<String, dynamic>? args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;

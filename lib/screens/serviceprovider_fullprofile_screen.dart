@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:workup/utils/colors.dart';
 import 'package:workup/utils/strings.dart';
 import 'package:workup/utils/text_styles.dart';
@@ -13,154 +15,159 @@ class ServiceProviderFullProfileScreen extends StatefulWidget {
       _ServiceProviderFullProfileScreenState();
 }
 
-class _ServiceProviderFullProfileScreenState
-    extends State<ServiceProviderFullProfileScreen> {
+class _ServiceProviderFullProfileScreenState extends State<ServiceProviderFullProfileScreen> {
+
+  Map<String, dynamic> spData = {}; // <-- Here!
+
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  late List<BasicInfoBox> basicInfoData;
-  late List<ServiceProviderBioBox> serviceProviderBioData;
-  late List<FeaturedBox> featuredImages;
-  late List<LanguagesBox> languagesKnown;
-  late List<ServiceProviderReviewBox> spReviews;
+  // late List<BasicInfoBox> basicInfoData = [];// late List<ServiceProviderBioBox> serviceProviderBioData = [];// late List<FeaturedBox> featuredImages = [];// late List<LanguagesBox> languagesKnown = [];// late List<ServiceProviderReviewBox> spReviews = [];
 
-  String jsonString = '''[
-  {
-      "imgURL": "https://res.cloudinary.com/deeqsba43/image/upload/v1691336265/cld-sample-4.jpg",
-      "sID": "suman",
-      "sName": "Suman Debnath",
-      "category": "Electrician",
-      "newSProvider": true,
-      "rating": 4.5,
-      "reviews": 20,
-      "ordersCompleted": 210,
-      "away": 3.5
-  },
-  {
-      "imgURL": "https://res.cloudinary.com/deeqsba43/image/upload/v1691336265/cld-sample-4.jpg",
-      "sID": "aniket",
-      "sName": "Aniket Bandi",
-      "category": "Plumber",
-      "newSProvider": false,
-      "rating": 4.0,
-      "reviews": 250,
-      "ordersCompleted": 590,
-      "away": 3.9
-  },
-  {
-      "imgURL": "https://res.cloudinary.com/deeqsba43/image/upload/v1691336265/cld-sample-4.jpg",
-      "sID": "suman1",
-      "sName": "Suman Debnath",
-      "category": "Electrician",
-      "newSProvider": true,
-      "rating": 4.5,
-      "reviews": 20,
-      "ordersCompleted": 210,
-      "away": 3.5
-  },
-  {
-      "imgURL": "https://res.cloudinary.com/deeqsba43/image/upload/v1691336265/cld-sample-4.jpg",
-      "sID": "aniket1",
-      "sName": "Aniket Bandi",
-      "category": "Plumber",
-      "newSProvider": false,
-      "rating": 4.0,
-      "reviews": 250,
-      "ordersCompleted": 590,
-      "away": 3.9
-  }
-  ]''';
+  final String? apiUrl = dotenv.env['API_BASE_URL'];
 
-  String jsonString2 = '''[
-  {
-    "sID": "suman",
-    "bio": "Suman Bio: Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt."
-  },
-  {
-    "sID": "aniket",
-    "bio": "Aniket Bio: Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt."
-  },
-  {
-    "sID": "suman1",
-    "bio": "Suman1 Bio: Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt."
-  },
-  {
-    "sID": "aniket1",
-    "bio": "Aniket1 Bio: Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt."
-  }
-  ]''';
+  String jsonString = '';
+  // '''[
+  // {
+  //     "imgURL": "https://res.cloudinary.com/deeqsba43/image/upload/v1691336265/cld-sample-4.jpg",
+  //     "sID": "suman",
+  //     "sName": "Suman Debnath",
+  //     "category": "Electrician",
+  //     "newSProvider": true,
+  //     "rating": 4.5,
+  //     "reviews": 20,
+  //     "ordersCompleted": 210,
+  //     "away": 3.5
+  // },
+  // {
+  //     "imgURL": "https://res.cloudinary.com/deeqsba43/image/upload/v1691336265/cld-sample-4.jpg",
+  //     "sID": "aniket",
+  //     "sName": "Aniket Bandi",
+  //     "category": "Plumber",
+  //     "newSProvider": false,
+  //     "rating": 4.0,
+  //     "reviews": 250,
+  //     "ordersCompleted": 590,
+  //     "away": 3.9
+  // },
+  // {
+  //     "imgURL": "https://res.cloudinary.com/deeqsba43/image/upload/v1691336265/cld-sample-4.jpg",
+  //     "sID": "suman1",
+  //     "sName": "Suman Debnath",
+  //     "category": "Electrician",
+  //     "newSProvider": true,
+  //     "rating": 4.5,
+  //     "reviews": 20,
+  //     "ordersCompleted": 210,
+  //     "away": 3.5
+  // },
+  // {
+  //     "imgURL": "https://res.cloudinary.com/deeqsba43/image/upload/v1691336265/cld-sample-4.jpg",
+  //     "sID": "aniket1",
+  //     "sName": "Aniket Bandi",
+  //     "category": "Plumber",
+  //     "newSProvider": false,
+  //     "rating": 4.0,
+  //     "reviews": 250,
+  //     "ordersCompleted": 590,
+  //     "away": 3.9
+  // }
+  // ]''';
 
-  String jsonString3 = '''[
-  {
-  "sID": "suman",
-  "images": [
-          "https://res.cloudinary.com/deeqsba43/image/upload/v1691336265/cld-sample-2.jpg",
-          "https://res.cloudinary.com/deeqsba43/image/upload/v1691336265/cld-sample-2.jpg",
-          "https://res.cloudinary.com/deeqsba43/image/upload/v1691336265/cld-sample-2.jpg"
-  ]
-  },
-  {
-    "sID": "aniket",
-    "images": [
-          "https://res.cloudinary.com/deeqsba43/image/upload/v1691336265/cld-sample-3.jpg",
-          "https://res.cloudinary.com/deeqsba43/image/upload/v1691336265/cld-sample-3.jpg",
-          "https://res.cloudinary.com/deeqsba43/image/upload/v1691336265/cld-sample-3.jpg",
-          "https://res.cloudinary.com/deeqsba43/image/upload/v1691336265/cld-sample-3.jpg"
+  String jsonString2 = '';
+  // '''[
+  // {
+  //   "sID": "suman",
+  //   "bio": "Suman Bio: Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt."
+  // },
+  // {
+  //   "sID": "aniket",
+  //   "bio": "Aniket Bio: Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt."
+  // },
+  // {
+  //   "sID": "suman1",
+  //   "bio": "Suman1 Bio: Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt."
+  // },
+  // {
+  //   "sID": "aniket1",
+  //   "bio": "Aniket1 Bio: Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt."
+  // }
+  // ]''';
 
-  ]
-  }
-  ]''';
+  String jsonString3 = '';
+  // '''[
+  // {
+  // "sID": "suman",
+  // "images": [
+  //         "https://res.cloudinary.com/deeqsba43/image/upload/v1691336265/cld-sample-2.jpg",
+  //         "https://res.cloudinary.com/deeqsba43/image/upload/v1691336265/cld-sample-2.jpg",
+  //         "https://res.cloudinary.com/deeqsba43/image/upload/v1691336265/cld-sample-2.jpg"
+  // ]
+  // },
+  // {
+  //   "sID": "aniket",
+  //   "images": [
+  //         "https://res.cloudinary.com/deeqsba43/image/upload/v1691336265/cld-sample-3.jpg",
+  //         "https://res.cloudinary.com/deeqsba43/image/upload/v1691336265/cld-sample-3.jpg",
+  //         "https://res.cloudinary.com/deeqsba43/image/upload/v1691336265/cld-sample-3.jpg",
+  //         "https://res.cloudinary.com/deeqsba43/image/upload/v1691336265/cld-sample-3.jpg"
+  //
+  // ]
+  // }
+  // ]''';
 
-  String jsonString4 = '''[
-  {
-      "sID": "suman",
-      "languages": [
-          "English",
-          "Hindi",
-          "Bengali"]
-  },
-  {
-  "sID": "aniket",
-      "languages": [
-          "English",
-          "Hindi"]
-  }
-  ]''';
+  String jsonString4 = '';
+  // '''[
+  // {
+  //     "sID": "suman",
+  //     "languages": [
+  //         "English",
+  //         "Hindi",
+  //         "Bengali"]
+  // },
+  // {
+  // "sID": "aniket",
+  //     "languages": [
+  //         "English",
+  //         "Hindi"]
+  // }
+  // ]''';
 
-  String jsonString5 = '''[
-  {
-    "sID": "suman",
-    "reviews": [
-    {
-        "reviewer": "Aayushi Sahay Shrivastava",
-        "profilePhotoURL": "https://img.freepik.com/premium-photo/side-view-woman-holding-hands_1048944-16242081.jpg?w=2000",
-        "feedback": "Excellent service! Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, ",
-        "stars": 5
-    },
-    {
-        "reviewer": "Isha Singhai",
-        "profilePhotoURL": "https://img.freepik.com/free-photo/medium-shot-contemplative-man-seaside_23-2150531618.jpg?t=st=1726245849~exp=1726249449~hmac=d7c11b5cca8b9e178f28f4f617e86f9d08068f4fadbe8b1406bdd8c25d98104e&w=2000",
-        "feedback": "Very good, but can improve punctuality. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo ",
-        "stars": 4
-    }
-    ] 
-  },
-  {
-    "sID": "aniket",
-    "reviews": [
-      {
-        "reviewer": "Aman Srivas",
-        "profilePhotoURL": "https://img.freepik.com/free-photo/confident-handsome-guy-posing-against-white-wall_176420-32936.jpg?t=st=1726245954~exp=1726249554~hmac=bfebdb20085c2f1c81e1c1f707841302cae850c6ca29b66bed34d06d368b0fe6&w=2000",
-        "feedback": "Not satisfied with the work. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis ",
-        "stars": 2
-      },
-      {
-        "reviewer": "Rekha Sharma",
-        "profilePhotoURL": "https://img.freepik.com/free-photo/lifestyle-beauty-fashion-people-emotions-concept-young-asian-female-office-manager-ceo-with-pleased-expression-standing-white-background-smiling-with-arms-crossed-chest_1258-59329.jpg?t=st=1726245978~exp=1726249578~hmac=d5deec397a9bd4907b102df2d529680ffceff637b542e6b1e3fc74ed1aa64ca2&w=2000",
-        "feedback": "Average experience.Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa ",
-        "stars": 3
-      }
-    ]
-  }
-  ]''';
+  String jsonString5 ='';
+  // '''[
+  // {
+  //   "sID": "suman",
+  //   "reviews": [
+  //   {
+  //       "reviewer": "Aayushi Sahay Shrivastava",
+  //       "profilePhotoURL": "https://img.freepik.com/premium-photo/side-view-woman-holding-hands_1048944-16242081.jpg?w=2000",
+  //       "feedback": "Excellent service! Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, ",
+  //       "stars": 5
+  //   },
+  //   {
+  //       "reviewer": "Isha Singhai",
+  //       "profilePhotoURL": "https://img.freepik.com/free-photo/medium-shot-contemplative-man-seaside_23-2150531618.jpg?t=st=1726245849~exp=1726249449~hmac=d7c11b5cca8b9e178f28f4f617e86f9d08068f4fadbe8b1406bdd8c25d98104e&w=2000",
+  //       "feedback": "Very good, but can improve punctuality. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo ",
+  //       "stars": 4
+  //   }
+  //   ]
+  // },
+  // {
+  //   "sID": "aniket",
+  //   "reviews": [
+  //     {
+  //       "reviewer": "Aman Srivas",
+  //       "profilePhotoURL": "https://img.freepik.com/free-photo/confident-handsome-guy-posing-against-white-wall_176420-32936.jpg?t=st=1726245954~exp=1726249554~hmac=bfebdb20085c2f1c81e1c1f707841302cae850c6ca29b66bed34d06d368b0fe6&w=2000",
+  //       "feedback": "Not satisfied with the work. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis ",
+  //       "stars": 2
+  //     },
+  //     {
+  //       "reviewer": "Rekha Sharma",
+  //       "profilePhotoURL": "https://img.freepik.com/free-photo/lifestyle-beauty-fashion-people-emotions-concept-young-asian-female-office-manager-ceo-with-pleased-expression-standing-white-background-smiling-with-arms-crossed-chest_1258-59329.jpg?t=st=1726245978~exp=1726249578~hmac=d5deec397a9bd4907b102df2d529680ffceff637b542e6b1e3fc74ed1aa64ca2&w=2000",
+  //       "feedback": "Average experience.Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa ",
+  //       "stars": 3
+  //     }
+  //   ]
+  // }
+  // ]''';
 
   handleMenuClick() {
     _scaffoldKey.currentState?.openDrawer();
@@ -172,90 +179,38 @@ class _ServiceProviderFullProfileScreenState
 
   handleChatClick() {}
 
-  Future<void> fetchData() async {
+  Future<ServiceProvider> fetchData(String sID) async {
+    final url1 = Uri.parse('$apiUrl/customers/getServiceProviderData');
+
     try {
-      //
-      // FETCH DATA HERE
-      //
-      // Simulate a network request delay
-      List<dynamic> jsonData = jsonDecode(jsonString);
-      basicInfoData =
-          jsonData.map((item) => BasicInfoBox.fromJson(item)).toList();
+      final response = await http.post(
+        url1,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({"sID": sID}),
+      );
 
-      List<dynamic> jsonData2 = jsonDecode(jsonString2);
-      serviceProviderBioData = jsonData2
-          .map((item) => ServiceProviderBioBox.fromJson(item))
-          .toList();
+      print('Raw response body: ${response.body}'); // 🧠 Debug print here
 
-      List<dynamic> jsonData3 = jsonDecode(jsonString3);
-      featuredImages =
-          jsonData3.map((item) => FeaturedBox.fromJson(item)).toList();
 
-      List<dynamic> jsonData4 = jsonDecode(jsonString4);
-      languagesKnown =
-          jsonData4.map((item) => LanguagesBox.fromJson(item)).toList();
-
-      List<dynamic> jsonData5 = jsonDecode(jsonString5);
-      spReviews = jsonData5
-          .map((item) => ServiceProviderReviewBox.fromJson(item))
-          .toList();
-      // print('Basic Info Data: $basicInfoData');
-      // print('Bio Data: $serviceProviderBioData');
-
-      await Future.delayed(const Duration(seconds: 3));
-      // Simulate fetching data
-      // You can replace this with actual data-fetching logic
-      // e.g., var response = await http.get('https://api.example.com/data');
-      // if (response.statusCode == 200) {
-      //   return jsonDecode(response.body);
-      // } else {
-      //   throw Exception('Failed to load data');
-      // }
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonData = jsonDecode(response.body);
+        print('Parsed JSON: $jsonData');
+        return ServiceProvider.fromJson(jsonData);
+      } else {
+        throw Exception('Failed to load data');
+      }
     } catch (e) {
-      // print('Error loading content: $e');
-      rethrow; // Rethrow the exception to let FutureBuilder handle it
+      throw Exception('Error occurred: $e');
     }
   }
 
-  // Future<List<String>> fetchLanguages(String sID) async {
-  //   final List<dynamic> jsonLangData = jsonDecode(jsonString4);
-  //   final Map<String, dynamic> languagesProviderData = jsonLangData
-  //       .cast<Map<String, dynamic>>()
-  //       .firstWhere((item) => item['sID'] == sID);
-  //   final List<dynamic>? languages = languagesProviderData['languages'];
-  //   return languages?.cast<String>() ?? [];
-  // }
-
-  // Future<List<Map<String, dynamic>>> fetchReviews(String sID) async {
-  //   try {
-  //     final reviewData = json.decode(jsonString5) as List<dynamic>;
-  //
-  //     final spReviews = reviewData.firstWhere(
-  //       (element) => element['sID'] == sID,
-  //       orElse: () => null,
-  //     );
-  //
-  //     if (spReviews != null && spReviews['reviews'] != null) {
-  //       return List<Map<String, dynamic>>.from(spReviews['reviews']);
-  //     } else {
-  //       return [];
-  //     }
-  //   } catch (e) {
-  //     throw Exception('Error fetching reviews: $e');
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
-    // final screenWidth = MediaQuery.of(context).size.width;
-    // final screenHeight = MediaQuery.of(context).size.height;
-    final selectedProviderID =
-        ModalRoute.of(context)?.settings.arguments as String?;
-    // print('Received sID: $selectedProviderID');
+    final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    final sID = args['sID'];
 
-    if (selectedProviderID == null) {
-      //never gonna happen
-      // Handle the case where sID is not provided
+    if (sID == null) {
+      //never gonna happen - the case where sID is not provided
       return const Center(child: Text('No Service Provider ID provided'));
     }
 
@@ -288,40 +243,44 @@ class _ServiceProviderFullProfileScreenState
         ),
         bottomNavigationBar: const CustomBottomNavigationBar(),
         resizeToAvoidBottomInset: false,
-        body: FutureBuilder(
-          future: fetchData(),
+        body: FutureBuilder<ServiceProvider>(
+          future: fetchData(sID),
           builder: (context, snapshot) {
             final screenWidth = MediaQuery.of(context).size.width;
             final screenHeight = MediaQuery.of(context).size.height;
-            final selectedProviderID =
-                ModalRoute.of(context)?.settings.arguments as String?;
 
-            if (snapshot.connectionState == ConnectionState.waiting) {
+            if (snapshot.connectionState == ConnectionState.waiting ) {
               return const Center(
                   child: CircularProgressIndicator(
                 color: AppColors.primary,
               ));
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
-            } else {
+            } else if (!snapshot.hasData) {
+              return const Center(child: Text('No data found'));
+            }
+            final serviceProvider = snapshot.data!;
+
+            // else { niche else wala bracket
               // filter relevant information for selected provider
-              final providerBio = serviceProviderBioData.firstWhere(
-                (bio) => bio.sID == selectedProviderID,
-                // orElse: () => null,
-              );
-              final providerInfo = basicInfoData.firstWhere(
-                (info) => info.sID == selectedProviderID,
-                // orElse: () => null,
-              );
-              final providerImages = featuredImages.firstWhere(
-                (images) => images.sID == selectedProviderID,
-              );
-              final providerLanguages = languagesKnown.firstWhere(
-                (languages) => languages.sID == selectedProviderID,
-              );
-              final providerReviews = spReviews.firstWhere(
-                (reviews) => reviews.sID == selectedProviderID,
-              );
+              // final providerBio = serviceProviderBioData.firstWhere(
+              //   (bio) => bio.sID == sID,
+              //   // orElse: () => null,
+              // );
+              // final providerInfo = basicInfoData.firstWhere(
+              //   (info) => info.sID == sID,
+              //   // orElse: () => null,
+              // );
+              // final providerImages = featuredImages.firstWhere(
+              //   (images) => images.sID == sID,
+              // );
+              // final providerLanguages = languagesKnown.firstWhere(
+              //   (languages) => languages.sID == sID,
+              // );
+              // final providerReviews = spReviews.firstWhere(
+              //   (reviews) => reviews.sID == sID,
+              // );
+            print('Languages in Widget: ${serviceProvider!.languages}');
 
               return Padding(
                 padding: const EdgeInsets.all(10.0),
@@ -331,34 +290,96 @@ class _ServiceProviderFullProfileScreenState
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       basicInfoBox(
-                        providerInfo.imgURL,
-                        providerInfo.sID,
-                        providerInfo.sName,
-                        providerInfo.category,
-                        providerInfo.newSProvider,
-                        providerInfo.rating,
-                        providerInfo.reviews,
-                        providerInfo.ordersCompleted,
-                        providerInfo.away,
+                        serviceProvider.imgURL,
+                        serviceProvider.sID,
+                        serviceProvider.sName,
+                        serviceProvider.category,
+                        serviceProvider.newSProvider,
+                        serviceProvider.rating,
+                        serviceProvider.reviews,
+                        serviceProvider.ordersCompleted,
+                        serviceProvider.away,
+                        // providerInfo.imgURL,
+                        // providerInfo.sID,
+                        // providerInfo.sName,
+                        // providerInfo.category,
+                        // providerInfo.newSProvider,
+                        // providerInfo.rating,
+                        // providerInfo.reviews,
+                        // providerInfo.ordersCompleted,
+                        // providerInfo.away,
                       ),
                       const SizedBox(height: 20.0), //remove later
-                      serviceProviderBioBox(providerInfo.sID, providerBio.bio,
+                      serviceProviderBioBox(
+                          serviceProvider.sID,
+                          serviceProvider.info,
+                          // providerBio.sID,
+                          // providerBio.bio,
                           screenWidth, screenHeight),
                       const SizedBox(height: 20), //remove later
-                      featuredBox(providerInfo.sID, providerImages.imageURLs),
-                      const SizedBox(height: 20),
-                      languagesKnownBox(
-                          providerInfo.sID, providerLanguages.languages),
-                      const SizedBox(height: 20),
-                      reviewsBox(providerInfo.sID, providerReviews.reviews),
+                      // featuredBox(
+                      //   spData['sID'],
+                      //   [], // put image URL list here if you have it from backend
+                      // ),
+                      // const SizedBox(height: 20),
+
+                    languagesKnownBox(
+                          serviceProvider.sID, serviceProvider.languages),
+                      // const SizedBox(height: 20),
+                      // reviewsBox(providerInfo.sID, providerReviews.reviews),
                     ],
                   ),
                 ),
               );
-            }
+            // } else wala bracket
           },
         ),
       ),
+    );
+  }
+}
+
+class ServiceProvider {
+  final String sID;
+  final String sName;
+  final String imgURL;
+  final String category;
+  final bool newSProvider;
+  final double rating;
+  final int reviews;
+  final int ordersCompleted;
+  final double away;
+  final String info;
+  final List<String> languages;
+
+  ServiceProvider({
+    required this.sID,
+    required this.sName,
+    required this.imgURL,
+    required this.category,
+    required this.newSProvider,
+    required this.rating,
+    required this.reviews,
+    required this.ordersCompleted,
+    required this.away,
+    required this.info,
+    required this.languages,
+  });
+
+  factory ServiceProvider.fromJson(Map<String, dynamic> json) {
+    print('Languages from JSON: ${json['languages']}');
+    return ServiceProvider(
+      sID: json['sID'] ?? '',
+      sName: json['sName'] ?? 'Unknown',
+      imgURL: json['imgURL'] ?? '',
+      category: json['category'] ?? '',
+      newSProvider: json['newSProvider'] ?? false,
+      rating: (json['rating'] ?? 0).toDouble(),
+      reviews: json['reviews'] ?? 0,
+      ordersCompleted: json['ordersCompleted'] ?? 0,
+      away: (json['away'] ?? 0).toDouble(),
+      info: json['info'] ?? '',
+      languages: List<String>.from(json['languages'] ?? ['Hindi']),
     );
   }
 }
@@ -602,6 +623,9 @@ Widget languagesKnownBox(String sID, List<String> languages) {
   // return FutureBuilder<List<String>>(
   //     future: fetchLanguages(sID),
   // builder: (context, snapshot) {
+  // if (languages.isEmpty) {
+  //   return const SizedBox.shrink(); // nothing to show
+  // }
   return Row(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
