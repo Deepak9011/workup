@@ -83,7 +83,7 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       navigatorKey: navigatorKey,
-      initialRoute: '/homepageScreen',
+      initialRoute: '/loginScreen',
       routes: {
         // '/': (context) => const LoginScreen(),
         '/loginScreen': (context) => const LoginScreen(),

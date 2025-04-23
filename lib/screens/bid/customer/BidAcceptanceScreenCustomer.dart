@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:workup/utils/colors.dart';
+import 'package:workup/widgets/bottom_navigation_bar.dart';
 
 class BidAcceptanceScreenCustomer extends StatefulWidget {
   final String bidId;
@@ -109,6 +110,7 @@ class _BidAcceptanceScreenCustomerState
           ),
         ],
       ),
+      bottomNavigationBar: const CustomBottomNavigationBar(),
       body: isLoading
           ? const Center(
               child: CircularProgressIndicator(
@@ -178,7 +180,7 @@ class BidCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '\$${bid.price.toStringAsFixed(2)}',
+                  '${bid.price.toStringAsFixed(2)}',
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,

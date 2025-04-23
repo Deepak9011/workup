@@ -135,10 +135,11 @@ class _BidListScreenServiceProviderState
                                   content: Text('Bid placed successfully!')),
                             );
                           });
-                          // _showBidConfirmation(context, item);
                         },
                         onExplore: () {
-                          _showBidDetails(context, item);
+                          Navigator.pushNamed(
+                              context, '/serviceProviderDashboard');
+                          // _showBidDetails(context, item);
                         },
                       );
                     },
@@ -147,63 +148,63 @@ class _BidListScreenServiceProviderState
     );
   }
 
-  void _showBidDetails(BuildContext context, BidItem item) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(item.category),
-          content: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  item.description,
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 10),
-                Text(
-                  'Price: \$${item.maxAmount.toStringAsFixed(2)}',
-                  style: TextStyle(fontSize: 16),
-                ),
-                SizedBox(height: 10),
-                Text(
-                  'Location: ${item.address}, ${item.state}, ${item.country}',
-                  style: TextStyle(fontSize: 14),
-                ),
-                SizedBox(height: 10),
-                Text(
-                  'Service Time: ${_formatDate(item.serviceTime)}',
-                  style: TextStyle(fontSize: 14),
-                ),
-                SizedBox(height: 10),
-                if (item.additionalNotes.isNotEmpty)
-                  Text(
-                    'Notes: ${item.additionalNotes}',
-                    style: TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
-                  ),
-                SizedBox(height: 10),
-                Text(
-                  'Bid Status: ${item.bidStatus}',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: item.bidStatus == 'Open' ? Colors.green : Colors.red,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              child: Text('Close'),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // void _showBidDetails(BuildContext context, BidItem item) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) {
+  //       return AlertDialog(
+  //         title: Text(item.category),
+  //         content: SingleChildScrollView(
+  //           child: Column(
+  //             crossAxisAlignment: CrossAxisAlignment.start,
+  //             mainAxisSize: MainAxisSize.min,
+  //             children: [
+  //               Text(
+  //                 item.description,
+  //                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+  //               ),
+  //               SizedBox(height: 10),
+  //               Text(
+  //                 'Price: \$${item.maxAmount.toStringAsFixed(2)}',
+  //                 style: TextStyle(fontSize: 16),
+  //               ),
+  //               SizedBox(height: 10),
+  //               Text(
+  //                 'Location: ${item.address}, ${item.state}, ${item.country}',
+  //                 style: TextStyle(fontSize: 14),
+  //               ),
+  //               SizedBox(height: 10),
+  //               Text(
+  //                 'Service Time: ${_formatDate(item.serviceTime)}',
+  //                 style: TextStyle(fontSize: 14),
+  //               ),
+  //               SizedBox(height: 10),
+  //               if (item.additionalNotes.isNotEmpty)
+  //                 Text(
+  //                   'Notes: ${item.additionalNotes}',
+  //                   style: TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
+  //                 ),
+  //               SizedBox(height: 10),
+  //               Text(
+  //                 'Bid Status: ${item.bidStatus}',
+  //                 style: TextStyle(
+  //                   fontSize: 14,
+  //                   color: item.bidStatus == 'Open' ? Colors.green : Colors.red,
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //         actions: [
+  //           TextButton(
+  //             child: Text('Close'),
+  //             onPressed: () => Navigator.pop(context),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
   String _formatDate(String dateString) {
     try {

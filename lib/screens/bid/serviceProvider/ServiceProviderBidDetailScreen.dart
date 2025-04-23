@@ -194,7 +194,7 @@ class _ServiceProviderBidDetailScreenState
                     _buildDetailRow(Icons.timer_off,
                         'Bidding Closes: ${dateFormat.format(DateTime.parse(bid['endBidTime']))}'),
                     _buildDetailRow(Icons.attach_money,
-                        'Maximum Budget: \$${bid['maxAmount']}'),
+                        'Maximum Budget: ${bid['maxAmount']}'),
                     _buildDetailRow(Icons.location_on,
                         'Location: ${bid['address']}, ${bid['state']}, ${bid['country']}'),
                     if (bid['additionalNotes'] != null &&

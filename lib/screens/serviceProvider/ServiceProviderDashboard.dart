@@ -166,7 +166,7 @@ class _ServiceProviderDashboardState extends State<ServiceProviderDashboard> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Price: \$${bid['price']}'),
+            Text('Price: ${bid['price']}'),
             SizedBox(height: 8),
             Text('Description: ${bid['description']}'),
             SizedBox(height: 8),
