@@ -9,6 +9,7 @@ import 'package:workup/utils/text_styles.dart';
 import 'package:workup/widgets/sp_bottom_navigation_bar.dart';
 
 class ServiceProviderDashboard extends StatefulWidget {
+  // bidd id
   final String bidId;
 
   const ServiceProviderDashboard({Key? key, required this.bidId})
